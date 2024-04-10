@@ -1,0 +1,103 @@
+-- 2024.04.09 - 1.3.0
+
+- feat: Add challenges (duels)
+- feat: Public developer API for round types
+- feat: Example dodgeball round type
+- fix: Helmet and armor give/remove problems
+- fix: Loading delay (now the plugin load instantly)
+- optimise: Weapon giving logics
+- optimise: Plugin loading mechanism
+
+-- 2024.04.06 - 1.2.1
+
+- feat: Windows support added back
+- fix: HardwareID is changing with docker reboot
+- fix: Health getter throws null pointer exception
+- fix: Arena clantag not changes if player stay alive
+- upgrade: Hardware lock algorithm
+
+-- 2024.04.04 - 1.2.0
+
+- upgrade: Arena setup algorithm
+- upgrade: Arena models
+- upgrade: Warmup weapon allocation
+
+-- 2024.04.04 - 1.1.3
+
+- feat: Order scoreboard by ArenaID
+- fix: Warmup fixed maximally with upgrades
+- fix: VirusTotal false alarm
+- fix: GameRules causing errors
+- fix: Block checking for team based rountype if there are none (performance)
+- fix: Remove round types from MySQL that not exists on server anymore
+
+-- 2024.04.03 - 1.1.2
+
+- feat: Block manual team changes
+- upgrade: Warmup arenas now spawn in solo mode
+- fix: RoundType numbers not matching
+- fix: Warmup every CS2 warmup problem
+- fix: Wrong item spawn problems
+- fix: Round preferences not being saved
+- optimise: Warmup arena logic
+- optimise: Round Terminator logic
+- optimise: Arena end logic
+
+-- 2024.04.03 - 1.1.1
+
+- feat: Add support for warmup arenas
+- fix: Queue stuck problems
+- fix: Crash on map change
+- fix: Spawn location removed from the list after being used
+- fix: Weapon preference not found error
+- fix: Round terminator result
+- fix: Arena player assignment logic
+- upgrade: Replaced custom database logic with ORM
+- upgrade: Round terminator logic
+- upgrade: Player death handler logic
+- upgrade: Arena weapon setup logic
+- upgrade: Arena location allocation logic
+- upgrade: Arena setup player logic
+- upgrade: Arena result logic
+- upgrade: Arena player assignment logic
+- optimise: GetArenaPlayer
+- optimise: GetCommonRoundType
+- optimise: Random generators
+- optimise: AddTeamsToArena
+- optimise: ShowWeaponPreferenceMenu
+- optimise: GetOpponentNames
+- optimise: Full WeaponModel
+- remove: Windows support
+
+-- 2024.04.01 - 1.1.0
+
+- feat: Add support for 2v2,3v3 and any x vs x modes
+- feat: Add configurable round types to config
+- upgrade: Arena restart logic
+- upgrade: Arena spawn finder logic
+- upgrade: Arena allocator logic
+- upgrade: Arena player assignment logic
+- upgrade: Round terminator logic
+- optimise: Full arena and player models
+
+-- 2024.04.01 - 1.0.3
+
+- feat: Add skin compatibility for metamod skinchangers
+- feat: Add "Random" weapon selection to weapon preferences
+- fix: Restart arena on second player join to fasten up the process
+- fix: Problems caused by default weapons
+- fix: Arena clantag missmatches
+- fix: T spawn remained log bug
+- fix: Round terminated when it shouldn't
+- remove: Round preference debug logs
+- optimise: Round winner and result choosing logic
+- optimise: Arena setup logic
+
+-- 2024.03.31 - 1.0.1
+
+- feat: Added AFK mode
+- feat: Added custom command lists to settings
+- feat: Waiting and AFK labels in the scoreboard
+- fix: Plugin not loading with hibernate enabled
+- fix: Database connection count problems
+- fix: Some players not assigned to arenas
