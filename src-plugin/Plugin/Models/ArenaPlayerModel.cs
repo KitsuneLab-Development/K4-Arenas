@@ -62,9 +62,10 @@ public class ArenaPlayer
 	{
 		if (this.IsValid)
 		{
+			Controller.RemoveWeapons();
+
 			if (!Config.CompatibilitySettings.CSSSkinchangerKnifeCompatibility)
 			{
-				Controller.RemoveWeapons();
 				PlayerGiveNamedItem(Controller, CsItem.Knife);
 			}
 
