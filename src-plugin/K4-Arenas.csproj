@@ -19,7 +19,7 @@
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="MySqlConnector" Version="*" />
     <Reference Include="K4ArenaSharedApi">
-      <HintPath>./K4-ArenaSharedApi.dll</HintPath>
+      <HintPath>../src-shared/K4-ArenaSharedApi.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
@@ -28,6 +28,6 @@
   </ItemGroup>
   <Target Name="CopyCustomFilesToPublishDirectory" AfterTargets="Publish">
     <Copy SourceFiles="$(ProjectDir)readme.txt" DestinationFolder="$(PublishDir)\" />
-    <Copy SourceFiles="$(ProjectDir)$(ReferencePath)\K4-ArenaSharedApi.dll" DestinationFolder="$(PublishDir)../../shared/K4-ArenaSharedApi/" />
+    <Copy SourceFiles="$(ProjectDir)$(ReferencePath)../src-shared/K4-ArenaSharedApi.dll" DestinationFolder="$(PublishDir)../../shared/K4-ArenaSharedApi/" />
   </Target>
 </Project>
