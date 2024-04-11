@@ -4,7 +4,6 @@ namespace K4Arenas
 	using CounterStrikeSharp.API;
 	using CounterStrikeSharp.API.Core;
 	using CounterStrikeSharp.API.Modules.Utils;
-	using Microsoft.Extensions.Logging;
 
 	using CounterStrikeSharp.API.Modules.Commands;
 
@@ -13,6 +12,7 @@ namespace K4Arenas
 	using CounterStrikeSharp.API.Modules.Cvars;
 	using System.Data;
 	using CounterStrikeSharp.API.Modules.Entities.Constants;
+	using System.Runtime.InteropServices;
 
 	public sealed partial class Plugin : BasePlugin
 	{
@@ -128,8 +128,6 @@ namespace K4Arenas
 
 		public void CheckCommonProblems()
 		{
-			ConVar.Find("sv_hibernate_when_empty")?.SetValue(false);
-
 			Server.ExecuteCommand("mp_halftime 0");
 			Server.ExecuteCommand("mp_join_grace_time 0");
 
@@ -217,12 +215,11 @@ namespace K4Arenas
 
 		public string GetOpponentNames(List<ArenaPlayer>? opponents)
 		{
-			if (opponents?.Any(opponent => opponent?.IsValid == true) == true)
-			{
-				return string.Join(", ", opponents.Where(opponent => opponent?.IsValid == true).Select(opponent => opponent.Controller.PlayerName));
-			}
+			if (opponents is null || opponents.Count == 0)
+				return Localizer["k4.general.no_opponent"];
 
-			return Localizer["k4.general.no_opponent"];
+
+			return string.Join(", ", opponents.Where(p => p.IsValid).Select(p => p.Controller.PlayerName));
 		}
 	}
 }

@@ -5,7 +5,6 @@ using K4Arenas.Models;
 using MySqlConnector;
 using Dapper;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
-using System.Data.Common;
 
 namespace K4Arenas;
 

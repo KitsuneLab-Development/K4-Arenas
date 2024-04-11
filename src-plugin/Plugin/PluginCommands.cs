@@ -163,7 +163,7 @@ namespace K4Arenas
 			p2.Challenge = challenge;
 
 			info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.waiting", challengedPlayer.PlayerName]}");
-			challengedPlayer.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.request", player!.PlayerName, Config.CommandSettings.ChallengeAcceptCommands[0], Config.CommandSettings.ChallengeDeclineCommands[0]]}");
+			challengedPlayer.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.request", player!.PlayerName, Config.CommandSettings.ChallengeAcceptCommands.FirstOrDefault("Missing"), Config.CommandSettings.ChallengeDeclineCommands.FirstOrDefault("Missing")]}");
 
 			int GetPlayerInArena(ArenaPlayer player)
 			{
@@ -195,7 +195,7 @@ namespace K4Arenas
 				Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
 			}
 
-			info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {(arenaPlayer.AFK ? string.Format(Localizer["k4.chat.afk_enabled"], Config.CommandSettings.AFKCommands[0]) : Localizer["k4.chat.afk_disabled"])}");
+			info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {(arenaPlayer.AFK ? string.Format(Localizer["k4.chat.afk_enabled"], Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")) : Localizer["k4.chat.afk_disabled"])}");
 		}
 
 		public void Command_Queue(CCSPlayerController? player, CommandInfo info)

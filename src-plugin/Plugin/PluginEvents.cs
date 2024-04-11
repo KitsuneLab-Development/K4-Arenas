@@ -153,7 +153,19 @@ namespace K4Arenas
 
 				if (rankedPlayers.GroupBy(p => p.Controller).Any(g => g.Count() > 1))
 				{
-					Logger.LogCritical("There is a player twice in the rankedPlayers queue");
+					Logger.LogCritical("There is a player twice in the rankedPlayers queue. Please notify the developer about this!");
+
+					var distinctPlayers = new Queue<ArenaPlayer>();
+					var seenControllers = new HashSet<CCSPlayerController>();
+					foreach (var player in rankedPlayers)
+					{
+						if (!seenControllers.Contains(player.Controller))
+						{
+							distinctPlayers.Enqueue(player);
+							seenControllers.Add(player.Controller);
+						}
+					}
+					rankedPlayers = distinctPlayers;
 				}
 
 				Arenas.Shuffle();
@@ -167,7 +179,7 @@ namespace K4Arenas
 					{
 						for (int i = 0; i < 3; i++)
 						{
-							player.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_reminder", Config.CommandSettings.AFKCommands[0]]}");
+							player.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_reminder", Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")]}");
 						}
 
 						player.Controller.Clan = $"{Localizer["k4.general.afk"]} |";

@@ -173,15 +173,14 @@ public class Arena
 				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");
 
 				player.Controller.SwitchTeam(switchTo);
-				string opponentNames = Plugin.GetOpponentNames(opponents);
 
 				if (ArenaID != -1)
 				{
-					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", ArenaID, opponentNames, Localizer[RoundType.Name]]}");
-					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_commands", Plugin.Config.CommandSettings.GunsCommands[0], Plugin.Config.CommandSettings.RoundsCommands[0]]}");
+					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", ArenaID, Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
+					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_commands", Plugin.Config.CommandSettings.GunsCommands.FirstOrDefault("Missing"), Plugin.Config.CommandSettings.RoundsCommands.FirstOrDefault("Missing")]}");
 				}
 
-				player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_afk"]}");
+				player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_afk", Plugin.Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")]}");
 
 				if (Plugin.gameRules?.WarmupPeriod == true)
 				{
@@ -235,6 +234,13 @@ public class Arena
 
 	public void OnRoundEnd()
 	{
+		if (ArenaID == -1)
+		{
+			Team1?.ForEach(Plugin.WaitingArenaPlayers.Enqueue);
+			Team2?.ForEach(Plugin.WaitingArenaPlayers.Enqueue);
+			return;
+		}
+
 		if (Team1 == null && Team2 == null)
 		{
 			Result = new ArenaResult(ArenaResultType.Empty, null, null);
