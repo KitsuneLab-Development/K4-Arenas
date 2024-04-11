@@ -152,7 +152,7 @@ namespace K4Arenas
 			int p1ArenaID = GetPlayerInArena(p1);
 			int p2ArenaID = GetPlayerInArena(p2);
 
-			if (p1ArenaID != -1 || p2ArenaID != -1)
+			if (p1ArenaID == -1 || p2ArenaID == -1)
 			{
 				info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.notinarena"]}");
 				return;
