@@ -1,3 +1,7 @@
+-- 2024.04.11 - 1.3.3
+
+- fix: Remove HLTV from queues(?)
+
 -- 2024.04.11 - 1.3.2
 
 - fix: Challenge cmd, not in arena problem

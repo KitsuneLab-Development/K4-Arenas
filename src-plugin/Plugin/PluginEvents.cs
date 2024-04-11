@@ -54,6 +54,9 @@ namespace K4Arenas
 				if (!playerController.IsValid)
 					return HookResult.Continue;
 
+				if (playerController.IsHLTV)
+					return HookResult.Continue;
+
 				SetupPlayer(playerController);
 
 				if (gameRules?.WarmupPeriod == false)
@@ -91,7 +94,7 @@ namespace K4Arenas
 				CheckCommonProblems();
 
 				Utilities.GetPlayers()
-					.Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && x.Connected == PlayerConnectedState.PlayerConnected)
+					.Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && !x.IsHLTV && x.Connected == PlayerConnectedState.PlayerConnected)
 					.ToList()
 					.ForEach(x =>
 					{

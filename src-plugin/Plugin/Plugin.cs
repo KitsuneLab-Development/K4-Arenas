@@ -77,7 +77,7 @@
                 gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
                 Utilities.GetPlayers()
-                    .Where(p => p.IsValid == true && p.PlayerPawn?.IsValid == true && p.Connected == PlayerConnectedState.PlayerConnected)
+                    .Where(p => p.IsValid == true && p.PlayerPawn?.IsValid == true && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected)
                     .ToList()
                     .ForEach(p =>
                     {

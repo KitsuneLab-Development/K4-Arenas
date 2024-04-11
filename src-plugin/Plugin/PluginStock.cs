@@ -24,7 +24,7 @@ namespace K4Arenas
 			if (Arenas is null)
 				return;
 
-			List<CCSPlayerController> players = Utilities.GetPlayers().Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && x.Connected == PlayerConnectedState.PlayerConnected).ToList();
+			List<CCSPlayerController> players = Utilities.GetPlayers().Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && !x.IsHLTV && x.Connected == PlayerConnectedState.PlayerConnected).ToList();
 
 			if (players.Count(p => !p.IsBot) == 0)
 				return;
