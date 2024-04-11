@@ -139,8 +139,9 @@ namespace K4Arenas
 			Server.ExecuteCommand("mp_t_default_primary \"\"");
 			Server.ExecuteCommand("mp_ct_default_primary \"\"");
 
-			// This could cause problems with the weapons
+			// This could cause problems with the items
 			Server.ExecuteCommand("mp_equipment_reset_rounds 0");
+			Server.ExecuteCommand("mp_free_armor 0");
 		}
 
 		public RoundType GetCommonRoundType(List<RoundType>? roundPreferences1, List<RoundType>? roundPreferences2, bool multi)

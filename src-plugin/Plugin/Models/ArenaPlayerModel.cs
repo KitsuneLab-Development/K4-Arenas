@@ -103,23 +103,23 @@ public class ArenaPlayer
 				PlayerGiveNamedItem(Controller, (CsItem)secondaryPreference);
 			}
 
-			if (Controller.PlayerPawn.Value != null)
+			Server.NextFrame(() =>
 			{
-				CCSPlayerPawn playerPawn = Controller.PlayerPawn.Value;
-
-				playerPawn.ArmorValue = roundType.Armor ? 100 : 0;
-				Utilities.SetStateChanged(playerPawn, "CCSPlayerPawnBase", "m_ArmorValue");
-
-
-				new CCSPlayer_ItemServices(playerPawn.ItemServices!.Handle)
+				if (Controller.PlayerPawn.Value != null)
 				{
-					HasHelmet = roundType.Helmet,
+					CCSPlayerPawn playerPawn = Controller.PlayerPawn.Value;
 
-				};
+					playerPawn.ArmorValue = roundType.Armor ? 100 : 0;
+					Utilities.SetStateChanged(playerPawn, "CCSPlayerPawnBase", "m_ArmorValue");
 
-				Utilities.SetStateChanged(playerPawn, "CCSPlayer_ItemServices", "m_bHasHelmet");
-				Utilities.SetStateChanged(playerPawn, "CBasePlayerPawn", "m_pItemServices");
-			}
+
+					CCSPlayer_ItemServices itemServive = new CCSPlayer_ItemServices(playerPawn.ItemServices!.Handle);
+					itemServive.HasHelmet = roundType.Helmet;
+
+					Utilities.SetStateChanged(playerPawn, "CCSPlayer_ItemServices", "m_bHasHelmet");
+					Utilities.SetStateChanged(playerPawn, "CBasePlayerPawn", "m_pItemServices");
+				}
+			});
 		}
 	}
 
