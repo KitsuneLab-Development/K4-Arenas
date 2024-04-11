@@ -106,12 +106,13 @@ public class ArenaPlayer
 			if (Controller.PlayerPawn.Value != null)
 			{
 				Controller.PlayerPawn.Value.ArmorValue = roundType.Armor ? 100 : 0;
-				Utilities.SetStateChanged(Controller.PlayerPawn.Value, "CCSPlayerPawnBase", "m_ArmorValue");
 
 				new CCSPlayer_ItemServices(Controller.PlayerPawn.Value.ItemServices!.Handle)
 				{
 					HasHelmet = roundType.Helmet
 				};
+
+				Utilities.SetStateChanged(Controller.PlayerPawn.Value, "CBasePlayerPawn", "m_pItemServices");
 				Utilities.SetStateChanged(Controller.PlayerPawn.Value, "CCSPlayer_ItemServices", "m_bHasHelmet");
 			}
 		}
