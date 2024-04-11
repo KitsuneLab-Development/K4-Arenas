@@ -1,10 +1,13 @@
+-- 2024.04.11 - 1.3.2
+
+- fix: Challenge cmd, not in arena problem
+- fix: Armor/Helmet problems
+
 -- 2024.04.11 - 1.3.1
 
 - feat: Add support for Windows MetamodSkinChanger support
 - feat: Worst scenario filter for queue to prevent duplicates
-- fix: Add missing text if no command found for chat message
-- fix: Challenge not in arena problem
-- fix: Armor/Helmet problems
+- fix: Add missing text, if no command found for chat message
 
 -- 2024.04.09 - 1.3.0
 
