@@ -128,13 +128,19 @@ namespace K4Arenas
 
 		public void CheckCommonProblems()
 		{
+			// Common things that fuck up the gameplay
 			Server.ExecuteCommand("mp_halftime 0");
 			Server.ExecuteCommand("mp_join_grace_time 0");
 
+
+			// We handle weapons dont worry
 			Server.ExecuteCommand("mp_t_default_secondary \"\"");
 			Server.ExecuteCommand("mp_ct_default_secondary \"\"");
 			Server.ExecuteCommand("mp_t_default_primary \"\"");
 			Server.ExecuteCommand("mp_ct_default_primary \"\"");
+
+			// This could cause problems with the weapons
+			Server.ExecuteCommand("mp_equipment_reset_rounds 0");
 		}
 
 		public RoundType GetCommonRoundType(List<RoundType>? roundPreferences1, List<RoundType>? roundPreferences2, bool multi)
