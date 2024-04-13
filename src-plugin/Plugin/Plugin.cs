@@ -8,6 +8,8 @@
     using K4Arenas.Models;
     using CounterStrikeSharp.API;
     using CounterStrikeSharp.API.Modules.Timers;
+    using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
+    using System.Runtime.InteropServices;
 
     [MinimumApiVersion(200)]
     public sealed partial class Plugin : BasePlugin, IPluginConfig<PluginConfig>
@@ -15,6 +17,7 @@
         //** ? PLUGIN GLOBALS */
         public required PluginConfig Config { get; set; } = new PluginConfig();
         public static readonly Random rng = new Random();
+        public static MemoryFunctionVoid<IntPtr, string, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr>? GiveNamedItem2;
 
         public void OnConfigParsed(PluginConfig config)
         {
@@ -24,6 +27,14 @@
             {
                 base.Logger.LogWarning("Configuration version mismatch (Expected: {0} | Current: {1})", this.Config.Version, config.Version);
             }
+
+            //** ? Signature Check */
+
+            GiveNamedItem2 = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                ? new(@"\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x83\xEC\x18\x48\x89\x7D\xC8\x48\x85\xF6\x74")
+                : RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? new(@"\x48\x83\xEC\x38\x48\xC7\x44\x24\x28\x00\x00\x00\x00\x45\x33\xC9\x45\x33\xC0\xC6\x44\x24\x20\x00\xE8\x2A\x2A\x2A\x2A\x48\x85")
+                    : null;
 
             //** ? Load Round Types */
 
