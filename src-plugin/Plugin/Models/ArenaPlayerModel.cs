@@ -214,16 +214,12 @@ public class ArenaPlayer
 		MenuManager.OpenChatMenu(Controller, primaryPreferenceMenu);
 	}
 
-	public static MemoryFunctionVoid<IntPtr, string, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr> GiveNamedItem2Linux = new(@"\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x83\xEC\x18\x48\x89\x7D\xC8\x48\x85\xF6\x74");
-	public static MemoryFunctionVoid<IntPtr, string, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr> GiveNamedItem2Windows = new(@"\x48\x83\xEC\x38\x48\xC7\x44\x24\x28\x00\x00\x00\x00\x45\x33\xC9\x45\x33\xC0\xC6\x44\x24\x20\x00\xE8\x2A\x2A\x2A\x2A\x48\x85");
 	public void PlayerGiveNamedItem(CCSPlayerController player, CsItem item)
 	{
 		if (!player.PlayerPawn.IsValid || player.PlayerPawn.Value == null || !player.PlayerPawn.Value.IsValid || player.PlayerPawn.Value.ItemServices == null)
 			return;
 
-		var GiveNamedItem2 = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? GiveNamedItem2Linux : RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? GiveNamedItem2Windows : null;
-
-		if (!Plugin.Config.CompatibilitySettings.MetamodSkinchanger || GiveNamedItem2 is null)
+		if (!Plugin.Config.CompatibilitySettings.MetamodSkinchanger || Plugin.GiveNamedItem2 is null)
 		{
 			player.GiveNamedItem(item);
 			return;
@@ -236,7 +232,7 @@ public class ArenaPlayer
 
 		try
 		{
-			GiveNamedItem2.Invoke(player.PlayerPawn.Value.ItemServices.Handle, itemName, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+			Plugin.GiveNamedItem2.Invoke(player.PlayerPawn.Value.ItemServices.Handle, itemName, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 		}
 		catch (Exception e)
 		{

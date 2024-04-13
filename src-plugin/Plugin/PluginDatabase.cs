@@ -52,14 +52,16 @@ public sealed partial class Plugin : BasePlugin
 	{
 		string tablePrefix = Config.DatabaseSettings.TablePrefix;
 
+		DefaultWeaponSettings dws = Config.DefaultWeaponSettings;
+
 		string sqlInsertOrUpdate = $@"
-		INSERT INTO `{tablePrefix}k4-arenas` (`steamid64`, `lastseen`, `rounds`)
-		VALUES (@SteamID, CURRENT_TIMESTAMP, @Rounds)
-		ON DUPLICATE KEY UPDATE `lastseen` = CURRENT_TIMESTAMP;";
+				INSERT INTO `{tablePrefix}k4-arenas` (`steamid64`, `lastseen`, `rifle`, `sniper`, `shotgun`, `smg`, `lmg`, `pistol`, `rounds`)
+				VALUES (@SteamID, CURRENT_TIMESTAMP, {dws.DefaultRifle}, {dws.DefaultRifle}, {dws.DefaultShotgun}, {dws.DefaultSMG}, {dws.DefaultLMG}, {dws.DefaultPistol}, @Rounds)
+				ON DUPLICATE KEY UPDATE `lastseen` = CURRENT_TIMESTAMP;";
 
 		string sqlSelect = $@"
-		SELECT `rifle`, `sniper`, `shotgun`, `smg`, `lmg`, `pistol`, `rounds`
-		FROM `{tablePrefix}k4-arenas` WHERE `steamid64` = @SteamID;";
+				SELECT `rifle`, `sniper`, `shotgun`, `smg`, `lmg`, `pistol`, `rounds`
+				FROM `{tablePrefix}k4-arenas` WHERE `steamid64` = @SteamID;";
 
 		using MySqlConnection connection = CreateConnection(Config);
 		await connection.OpenAsync();

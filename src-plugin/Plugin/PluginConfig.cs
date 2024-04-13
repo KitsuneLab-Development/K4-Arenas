@@ -132,6 +132,9 @@ namespace K4Arenas
 		[JsonPropertyName("compatibility-settings")]
 		public CompatibilitySettings CompatibilitySettings { get; set; } = new CompatibilitySettings();
 
+		[JsonPropertyName("default-weapon-settings")]
+		public DefaultWeaponSettings DefaultWeaponSettings { get; set; } = new DefaultWeaponSettings();
+
 		[JsonPropertyName("ConfigVersion")]
 		public override int Version { get; set; } = 1;
 	}
@@ -194,6 +197,27 @@ namespace K4Arenas
 			"cdecline",
 			"cdeny"
 		};
+	}
+
+	public sealed class DefaultWeaponSettings
+	{
+		[JsonPropertyName("default-rifle")]
+		public int? DefaultRifle { get; set; } = null;
+
+		[JsonPropertyName("default-sniper")]
+		public int? DefaultSniper { get; set; } = null;
+
+		[JsonPropertyName("default-smg")]
+		public int? DefaultSMG { get; set; } = null;
+
+		[JsonPropertyName("default-lmg")]
+		public int? DefaultLMG { get; set; } = null;
+
+		[JsonPropertyName("default-shotgun")]
+		public int? DefaultShotgun { get; set; } = null;
+
+		[JsonPropertyName("default-pistol")]
+		public int? DefaultPistol { get; set; } = null;
 	}
 
 	public sealed class DatabaseSettings
