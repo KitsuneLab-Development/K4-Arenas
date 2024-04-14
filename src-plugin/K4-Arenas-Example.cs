@@ -16,7 +16,7 @@ public class PluginK4ArenaRoundExample : BasePlugin
 	public override string ModuleVersion => "1.0.0";
 
 	public static PluginCapability<IK4ArenaSharedApi> Capability_SharedAPI { get; } = new("k4-arenas:sharedapi");
-	public override void Load(bool hotReload)
+	public override void OnAllPluginsLoaded(bool hotReload)
 	{
 		IK4ArenaSharedApi? checkAPI = Capability_SharedAPI.Get();
 
