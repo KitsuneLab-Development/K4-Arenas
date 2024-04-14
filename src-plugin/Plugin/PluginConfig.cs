@@ -58,7 +58,7 @@ namespace K4Arenas
 			{
 				TranslationName = "k4.rounds.scout",
 				TeamSize = 1,
-				PrimaryWeapon = CsItem.Scout,
+				PrimaryWeapon = "weapon_ssg08",
 				UsePreferredSecondary = true,
 				Armor = true,
 				Helmet = true
@@ -67,7 +67,7 @@ namespace K4Arenas
 			{
 				TranslationName = "k4.rounds.awp",
 				TeamSize = 1,
-				PrimaryWeapon = CsItem.AWP,
+				PrimaryWeapon = "weapon_awp",
 				UsePreferredSecondary = true,
 				Armor = true,
 				Helmet = true
@@ -76,7 +76,7 @@ namespace K4Arenas
 			{
 				TranslationName = "k4.rounds.deagle",
 				TeamSize = 1,
-				SecondaryWeapon = CsItem.Deagle,
+				SecondaryWeapon = "weapon_deagle",
 				Armor = false,
 				Helmet = false
 			},

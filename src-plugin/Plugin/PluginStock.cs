@@ -4,15 +4,12 @@ namespace K4Arenas
 	using CounterStrikeSharp.API;
 	using CounterStrikeSharp.API.Core;
 	using CounterStrikeSharp.API.Modules.Utils;
-
 	using CounterStrikeSharp.API.Modules.Commands;
-
 	using K4Arenas.Models;
 	using CounterStrikeSharp.API.Modules.Admin;
-	using CounterStrikeSharp.API.Modules.Cvars;
 	using System.Data;
 	using CounterStrikeSharp.API.Modules.Entities.Constants;
-	using System.Runtime.InteropServices;
+	using System.Runtime.Serialization;
 
 	public sealed partial class Plugin : BasePlugin
 	{
@@ -69,7 +66,12 @@ namespace K4Arenas
 			ArenaPlayer arenaPlayer = new ArenaPlayer(this, playerController);
 			WaitingArenaPlayers.Enqueue(arenaPlayer);
 
+			if (arenaPlayer.Controller.IsBot)
+				return arenaPlayer;
+
 			arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.queue_added", WaitingArenaPlayers.Count]}");
+			arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_commands", Config.CommandSettings.GunsCommands.FirstOrDefault("Missing"), Config.CommandSettings.RoundsCommands.FirstOrDefault("Missing")]}");
+			arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_afk", Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")]}");
 
 			ulong steamID = playerController.SteamID;
 			Task.Run(async () =>

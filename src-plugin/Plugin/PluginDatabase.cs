@@ -5,6 +5,8 @@ using K4Arenas.Models;
 using MySqlConnector;
 using Dapper;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
+using Microsoft.Extensions.Logging;
+using CounterStrikeSharp.API;
 
 namespace K4Arenas;
 
@@ -55,9 +57,9 @@ public sealed partial class Plugin : BasePlugin
 		DefaultWeaponSettings dws = Config.DefaultWeaponSettings;
 
 		string sqlInsertOrUpdate = $@"
-				INSERT INTO `{tablePrefix}k4-arenas` (`steamid64`, `lastseen`, `rifle`, `sniper`, `shotgun`, `smg`, `lmg`, `pistol`, `rounds`)
-				VALUES (@SteamID, CURRENT_TIMESTAMP, {dws.DefaultRifle}, {dws.DefaultRifle}, {dws.DefaultShotgun}, {dws.DefaultSMG}, {dws.DefaultLMG}, {dws.DefaultPistol}, @Rounds)
-				ON DUPLICATE KEY UPDATE `lastseen` = CURRENT_TIMESTAMP;";
+			INSERT INTO `{tablePrefix}k4-arenas` (`steamid64`, `lastseen`, `rifle`, `sniper`, `shotgun`, `smg`, `lmg`, `pistol`, `rounds`)
+			VALUES (@SteamID, CURRENT_TIMESTAMP, @DefaultRifle, @DefaultSniper, @DefaultShotgun, @DefaultSMG, @DefaultLMG, @DefaultPistol, @Rounds)
+			ON DUPLICATE KEY UPDATE `lastseen` = CURRENT_TIMESTAMP;";
 
 		string sqlSelect = $@"
 				SELECT `rifle`, `sniper`, `shotgun`, `smg`, `lmg`, `pistol`, `rounds`
@@ -67,7 +69,17 @@ public sealed partial class Plugin : BasePlugin
 		await connection.OpenAsync();
 
 		string rounds = string.Join(",", RoundType.RoundTypes.Select(x => x.ID.ToString()));
-		await connection.ExecuteAsync(sqlInsertOrUpdate, new { SteamID, Rounds = rounds });
+		await connection.ExecuteAsync(sqlInsertOrUpdate, new
+		{
+			SteamID,
+			Rounds = rounds,
+			dws.DefaultRifle,
+			dws.DefaultSniper,
+			dws.DefaultShotgun,
+			dws.DefaultSMG,
+			dws.DefaultLMG,
+			dws.DefaultPistol
+		});
 
 		dynamic? result = await connection.QuerySingleOrDefaultAsync<dynamic>(sqlSelect, new { SteamID });
 		if (result != null)
@@ -109,10 +121,9 @@ public sealed partial class Plugin : BasePlugin
 				if (validRoundIds.Count != roundIds.Length)
 				{
 					string validRounds = string.Join(",", validRoundIds);
-					string sqlUpdateRounds = $@"
-					UPDATE `{tablePrefix}k4-arenas`
-					SET `rounds` = @ValidRounds
-					WHERE `steamid64` = @SteamID;";
+					string sqlUpdateRounds = $@"UPDATE `{tablePrefix}k4-arenas`
+						SET `rounds` = @ValidRounds
+						WHERE `steamid64` = @SteamID;";
 
 					await connection.ExecuteAsync(sqlUpdateRounds, new { SteamID, ValidRounds = validRounds });
 				}
@@ -122,56 +133,43 @@ public sealed partial class Plugin : BasePlugin
 		}
 	}
 
-	public async Task SelectWeaponDatabaseAsync(ulong SteamId, CsItem? Weapon, WeaponType WeaponType)
+	public async Task SavePlayerPreferencesAsync(List<ArenaPlayer> players)
 	{
-		string columnName = GetColumnName(WeaponType);
-
-		string query = $@"
-        UPDATE `{Config.DatabaseSettings.TablePrefix}k4-arenas`
-        SET `{columnName}` = @Weapon
-        WHERE `steamid64` = @SteamId;";
-
 		using MySqlConnection connection = CreateConnection(Config);
 		await connection.OpenAsync();
+		using var transaction = await connection.BeginTransactionAsync();
 
-		await connection.ExecuteAsync(query, new { Weapon, SteamId });
-	}
-
-	public async Task UpdateRoundDatabaseAsync(ulong steamid, int round, bool remove)
-	{
-		string selectQuery = $@"
-        SELECT `rounds`
-        FROM `{Config.DatabaseSettings.TablePrefix}k4-arenas`
-        WHERE `steamid64` = @SteamId;";
-
-		using (MySqlConnection connection = CreateConnection(Config))
+		try
 		{
-			await connection.OpenAsync();
+			string sqlUpdate = $@"
+            UPDATE `{Config.DatabaseSettings.TablePrefix}k4-arenas`
+            SET `rifle` = @Rifle, `sniper` = @Sniper, `shotgun` = @Shotgun, `smg` = @SMG, `lmg` = @LMG, `pistol` = @Pistol, `rounds` = @Rounds
+            WHERE `steamid64` = @SteamId;";
 
-			string? rounds = await connection.QueryFirstOrDefaultAsync<string>(selectQuery, new { SteamId = steamid });
-
-			if (rounds != null)
+			foreach (ArenaPlayer player in players)
 			{
-				List<int> roundList = !string.IsNullOrEmpty(rounds) ? rounds.Split(',').Select(int.Parse).ToList() : new List<int>();
-
-				if (remove)
+				var weaponParameters = new
 				{
-					roundList.Remove(round);
-				}
-				else
-				{
-					roundList.Add(round);
-				}
+					SteamId = player.SteamID,
+					Rifle = player.WeaponPreferences.TryGetValue(WeaponType.Rifle, out CsItem? rifle) ? rifle : null,
+					Sniper = player.WeaponPreferences.TryGetValue(WeaponType.Sniper, out CsItem? sniper) ? sniper : null,
+					Shotgun = player.WeaponPreferences.TryGetValue(WeaponType.Shotgun, out CsItem? shotgun) ? shotgun : null,
+					SMG = player.WeaponPreferences.TryGetValue(WeaponType.SMG, out CsItem? smg) ? smg : null,
+					LMG = player.WeaponPreferences.TryGetValue(WeaponType.LMG, out CsItem? lmg) ? lmg : null,
+					Pistol = player.WeaponPreferences.TryGetValue(WeaponType.Pistol, out CsItem? pistol) ? pistol : null,
+					Rounds = string.Join(",", player.RoundPreferences.Select(r => r.ID))
+				};
 
-				string newRounds = string.Join(",", roundList);
-
-				string updateQuery = $@"
-                UPDATE `{Config.DatabaseSettings.TablePrefix}k4-arenas`
-                SET `rounds` = @NewRounds
-                WHERE `steamid64` = @SteamId;";
-
-				await connection.ExecuteAsync(updateQuery, new { NewRounds = newRounds, SteamId = steamid });
+				await connection.ExecuteAsync(sqlUpdate, weaponParameters, transaction: transaction);
 			}
+
+			await transaction.CommitAsync();
+		}
+		catch (Exception ex)
+		{
+			await transaction.RollbackAsync();
+			Server.NextFrame(() => Logger.LogError("Failed to save player preferences: {0}", ex.Message));
+			throw;
 		}
 	}
 

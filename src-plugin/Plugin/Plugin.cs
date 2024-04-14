@@ -85,6 +85,9 @@
 
             if (hotReload)
             {
+                if (Arenas is null)
+                    Arenas = new Arenas(this);
+
                 gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
                 Utilities.GetPlayers()
@@ -97,6 +100,17 @@
 
                 Server.ExecuteCommand("mp_restartgame 1");
             }
+        }
+
+        public override void Unload(bool hotReload)
+        {
+            List<ArenaPlayer> players = Utilities.GetPlayers()
+                 .Where(p => p.IsValid && p.PlayerPawn?.IsValid == true && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected)
+                 .Select(p => Arenas?.FindPlayer(p)!)
+                 .Where(p => p != null)
+                 .ToList();
+
+            Task.Run(() => SavePlayerPreferencesAsync(players));
         }
     }
 }

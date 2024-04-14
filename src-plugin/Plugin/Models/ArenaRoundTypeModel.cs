@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using K4Arenas.Models;
@@ -54,7 +55,10 @@ namespace K4Arenas.Models
 
 		public static void AddRoundType(RoundTypeReader roundType)
 		{
-			RoundTypes.Add(new RoundType(roundType.TranslationName, roundType.TeamSize, roundType.PrimaryWeapon, roundType.SecondaryWeapon, roundType.UsePreferredPrimary, roundType.PrimaryPreference, roundType.UsePreferredSecondary, roundType.Armor, roundType.Helmet));
+			CsItem? PrimaryPreference = FindEnumValueByEnumMemberValue(roundType.PrimaryWeapon);
+			CsItem? SecondaryPreference = FindEnumValueByEnumMemberValue(roundType.SecondaryWeapon);
+
+			RoundTypes.Add(new RoundType(roundType.TranslationName, roundType.TeamSize, PrimaryPreference, SecondaryPreference, roundType.UsePreferredPrimary, roundType.PrimaryPreference, roundType.UsePreferredSecondary, roundType.Armor, roundType.Helmet));
 		}
 
 		public static int AddSpecialRoundType(string name, int teamSize, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> startFunction, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> endFunction)
@@ -94,6 +98,23 @@ namespace K4Arenas.Models
 				ThreeVSThree
 			});
 		}
+
+		public static CsItem? FindEnumValueByEnumMemberValue(string? search)
+		{
+			if (search is null)
+				return null;
+
+			var type = typeof(CsItem);
+			foreach (var field in type.GetFields())
+			{
+				var attribute = field.GetCustomAttributes(typeof(EnumMemberAttribute), false).Cast<EnumMemberAttribute>().FirstOrDefault();
+				if (attribute?.Value == search)
+				{
+					return (CsItem?)field.GetValue(null);
+				}
+			}
+			return null;
+		}
 	}
 }
 
@@ -101,10 +122,10 @@ public class RoundTypeReader
 {
 	public required string TranslationName { get; set; }
 	public int TeamSize { get; set; } = 1;
-	public CsItem? PrimaryWeapon { get; set; } = null;
-	public CsItem? SecondaryWeapon { get; set; } = null;
+	public string? PrimaryWeapon { get; set; } = null;
+	public string? SecondaryWeapon { get; set; } = null;
 	public bool UsePreferredPrimary { get; set; } = false;
-	public WeaponType? PrimaryPreference { get; set; } = WeaponType.Unknown;
+	public WeaponType? PrimaryPreference { get; set; } = null;
 	public bool UsePreferredSecondary { get; set; } = false;
 	public bool Armor { get; set; } = true;
 	public bool Helmet { get; set; } = true;

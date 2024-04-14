@@ -18,7 +18,9 @@ namespace K4Arenas
 
 				AddTimer(0.1f, () =>
 				{
-					Arenas = new Arenas(this);
+					if (Arenas is null)
+						Arenas = new Arenas(this);
+
 					gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
 					if (gameRules?.WarmupPeriod == true)
@@ -57,6 +59,9 @@ namespace K4Arenas
 				if (playerController.IsHLTV)
 					return HookResult.Continue;
 
+				if (Arenas?.FindPlayer(playerController) != null)
+					return HookResult.Continue;
+
 				SetupPlayer(playerController);
 
 				if (gameRules?.WarmupPeriod == false)
@@ -72,14 +77,26 @@ namespace K4Arenas
 
 			RegisterEventHandler((EventPlayerDisconnect @event, GameEventInfo info) =>
 			{
+				if (@event.Reason == 1)
+					return HookResult.Continue;
+
 				CCSPlayerController playerController = @event.Userid;
 
 				if (!playerController.IsValid)
 					return HookResult.Continue;
 
+				if (!playerController.IsBot && !playerController.IsHLTV)
+				{
+					ArenaPlayer? arenaPlayer = Arenas?.FindPlayer(playerController);
+
+					if (arenaPlayer is null)
+						return HookResult.Continue;
+
+					Task.Run(() => SavePlayerPreferencesAsync(new List<ArenaPlayer> { arenaPlayer }));
+				}
+
 				WaitingArenaPlayers = new Queue<ArenaPlayer>(WaitingArenaPlayers.Where(p => p.Controller != playerController));
 				Arenas?.ArenaList.ForEach(arena => arena.RemovePlayer(playerController));
-
 				return HookResult.Continue;
 			});
 
@@ -180,10 +197,7 @@ namespace K4Arenas
 				{
 					if (player.AFK)
 					{
-						for (int i = 0; i < 3; i++)
-						{
-							player.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_reminder", Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")]}");
-						}
+						player.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_reminder", Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")]}");
 
 						player.Controller.Clan = $"{Localizer["k4.general.afk"]} |";
 						Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");

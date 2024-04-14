@@ -1,10 +1,6 @@
-using System.Data;
-using System.Runtime.InteropServices;
-using System.Text;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
-using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
@@ -63,44 +59,52 @@ public class ArenaPlayer
 	{
 		if (this.IsValid)
 		{
-			Controller.RemoveWeapons();
+			this.RemovePlayerWeapons();
 
 			if (!Config.CompatibilitySettings.CSSSkinchangerKnifeCompatibility)
 			{
 				PlayerGiveNamedItem(Controller, CsItem.Knife);
 			}
 
-			if (roundType.PrimaryWeapon != null)
+			if (roundType.PrimaryPreference == WeaponType.Unknown) // Warmup or Random round types
 			{
-				PlayerGiveNamedItem(Controller, (CsItem)roundType.PrimaryWeapon);
+				PlayerGiveNamedItem(Controller, WeaponModel.GetRandomWeapon(WeaponType.Unknown));
+				PlayerGiveNamedItem(Controller, WeaponModel.GetRandomWeapon(WeaponType.Pistol));
 			}
-			else if (roundType.UsePreferredPrimary && roundType.PrimaryPreference != null && WeaponPreferences != null)
+			else
 			{
-				WeaponType primaryPreferenceType = (WeaponType)roundType.PrimaryPreference;
-				CsItem? primaryPreference = primaryPreferenceType != WeaponType.Unknown ? WeaponPreferences.GetValueOrDefault(primaryPreferenceType) ?? null : null;
-
-				if (primaryPreference == null)
+				if (roundType.PrimaryWeapon != null)
 				{
-					primaryPreference = WeaponModel.GetRandomWeapon(primaryPreferenceType);
+					PlayerGiveNamedItem(Controller, (CsItem)roundType.PrimaryWeapon);
+				}
+				else if (roundType.UsePreferredPrimary && roundType.PrimaryPreference != null && WeaponPreferences != null)
+				{
+					WeaponType primaryPreferenceType = (WeaponType)roundType.PrimaryPreference;
+					CsItem? primaryPreference = WeaponPreferences!.GetValueOrDefault(primaryPreferenceType) ?? null;
+
+					if (primaryPreference == null)
+					{
+						primaryPreference = WeaponModel.GetRandomWeapon(primaryPreferenceType);
+					}
+
+					PlayerGiveNamedItem(Controller, (CsItem)primaryPreference);
 				}
 
-				PlayerGiveNamedItem(Controller, (CsItem)primaryPreference);
-			}
-
-			if (roundType.SecondaryWeapon != null)
-			{
-				PlayerGiveNamedItem(Controller, (CsItem)roundType.SecondaryWeapon);
-			}
-			else if (roundType.UsePreferredSecondary && WeaponPreferences != null)
-			{
-				CsItem? secondaryPreference = WeaponPreferences.GetValueOrDefault(WeaponType.Pistol) ?? null;
-
-				if (secondaryPreference == null)
+				if (roundType.SecondaryWeapon != null)
 				{
-					secondaryPreference = WeaponModel.GetRandomWeapon(WeaponType.Pistol);
+					PlayerGiveNamedItem(Controller, (CsItem)roundType.SecondaryWeapon);
 				}
+				else if (roundType.UsePreferredSecondary && WeaponPreferences != null)
+				{
+					CsItem? secondaryPreference = WeaponPreferences.GetValueOrDefault(WeaponType.Pistol) ?? null;
 
-				PlayerGiveNamedItem(Controller, (CsItem)secondaryPreference);
+					if (secondaryPreference == null)
+					{
+						secondaryPreference = WeaponModel.GetRandomWeapon(WeaponType.Pistol);
+					}
+
+					PlayerGiveNamedItem(Controller, (CsItem)secondaryPreference);
+				}
 			}
 
 			Server.NextFrame(() =>
@@ -113,10 +117,11 @@ public class ArenaPlayer
 					Utilities.SetStateChanged(playerPawn, "CCSPlayerPawnBase", "m_ArmorValue");
 
 
-					CCSPlayer_ItemServices itemServive = new CCSPlayer_ItemServices(playerPawn.ItemServices!.Handle);
-					itemServive.HasHelmet = roundType.Helmet;
+					CCSPlayer_ItemServices itemServive = new CCSPlayer_ItemServices(playerPawn.ItemServices!.Handle)
+					{
+						HasHelmet = roundType.Helmet
+					};
 
-					Utilities.SetStateChanged(playerPawn, "CCSPlayer_ItemServices", "m_bHasHelmet");
 					Utilities.SetStateChanged(playerPawn, "CBasePlayerPawn", "m_pItemServices");
 				}
 			});
@@ -145,8 +150,6 @@ public class ArenaPlayer
 						RoundPreferences.Add(roundType);
 						Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_added", Localizer[roundType.Name]]}");
 					}
-
-					Task.Run(() => Plugin.UpdateRoundDatabaseAsync(steamID, roundType.ID, isRoundTypeEnabled));
 
 					ShowRoundPreferenceMenu();
 				}
@@ -180,11 +183,8 @@ public class ArenaPlayer
 		primaryPreferenceMenu.AddMenuOption(WeaponPreferences[weaponType] is null ? Localizer["k4.menu.weaponpref.item_enabled", Localizer["k4.general.random"]] : Localizer["k4.menu.weaponpref.item_disabled", Localizer["k4.general.random"]],
 			(player, option) =>
 			{
-				WeaponPreferences[weaponType] = CsItem.Snowball;
+				WeaponPreferences[weaponType] = null;
 				Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.weapon_preferences_added", Localizer["k4.general.random"]]}");
-
-				ulong steamID = Controller.SteamID;
-				Task.Run(() => Plugin.SelectWeaponDatabaseAsync(steamID, null, weaponType));
 
 				ShowWeaponSubPreferenceMenu(weaponType);
 			}
@@ -202,9 +202,6 @@ public class ArenaPlayer
 				{
 					WeaponPreferences[weaponType] = item;
 					Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.weapon_preferences_added", Localizer[item.ToString()]]}");
-
-					ulong steamID = Controller.SteamID;
-					Task.Run(() => Plugin.SelectWeaponDatabaseAsync(steamID, item, weaponType));
 
 					ShowWeaponSubPreferenceMenu(weaponType);
 				}
@@ -238,6 +235,33 @@ public class ArenaPlayer
 		{
 			Plugin.Logger.LogError("Failed to give named item. It is recommended to disable 'metamod-skinchanger-compatibility' on this server. Error: " + e.Message);
 			player.GiveNamedItem(item);
+		}
+	}
+
+	public void RemovePlayerWeapons()
+	{
+		if (Controller.PlayerPawn.Value?.WeaponServices != null)
+		{
+			foreach (CHandle<CBasePlayerWeapon> weapon in Controller.PlayerPawn.Value.WeaponServices.MyWeapons)
+			{
+				if (weapon?.IsValid == true && weapon.Value != null)
+				{
+					CCSWeaponBase ccsWeaponBase = weapon.Value.As<CCSWeaponBase>();
+
+					if (ccsWeaponBase?.IsValid == true)
+					{
+						CCSWeaponBaseVData? weaponData = ccsWeaponBase.VData;
+
+						if (weaponData == null)
+							continue;
+
+						if (Config.CompatibilitySettings.CSSSkinchangerKnifeCompatibility && weaponData.GearSlot == gear_slot_t.GEAR_SLOT_KNIFE)
+							continue;
+
+						Controller.RemoveItemByDesignerName(weaponData.Name, false);
+					}
+				}
+			}
 		}
 	}
 }

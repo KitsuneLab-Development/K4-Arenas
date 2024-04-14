@@ -90,7 +90,7 @@ public class Arena
 			return;
 
 		ArenaID = -1;
-		RoundType = new RoundType("none", 1, null, null, true, WeaponType.Unknown, true);
+		RoundType = new RoundType("none", 1, null, null, false, WeaponType.Unknown, false);
 		ArenaScore = 0;
 
 		var (t1Spawns, t2Spawns) = Plugin.rng.Next(0, 2) == 1 ? (Spawns.Item1, Spawns.Item2) : (Spawns.Item2, Spawns.Item1);
@@ -177,10 +177,7 @@ public class Arena
 				if (ArenaID != -1)
 				{
 					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", ArenaID, Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
-					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_commands", Plugin.Config.CommandSettings.GunsCommands.FirstOrDefault("Missing"), Plugin.Config.CommandSettings.RoundsCommands.FirstOrDefault("Missing")]}");
 				}
-
-				player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_afk", Plugin.Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")]}");
 
 				if (Plugin.gameRules?.WarmupPeriod == true)
 				{
