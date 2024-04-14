@@ -143,9 +143,6 @@ namespace K4Arenas
 	{
 		[JsonPropertyName("metamod-skinchanger-compatibility")]
 		public bool MetamodSkinchanger { get; set; } = false;
-
-		[JsonPropertyName("css-skinchanger-knife-compatibility")]
-		public bool CSSSkinchangerKnifeCompatibility { get; set; } = false;
 	}
 
 	public sealed class CommandSettings

@@ -59,12 +59,8 @@ public class ArenaPlayer
 	{
 		if (this.IsValid)
 		{
-			this.RemovePlayerWeapons();
-
-			if (!Config.CompatibilitySettings.CSSSkinchangerKnifeCompatibility)
-			{
-				PlayerGiveNamedItem(Controller, CsItem.Knife);
-			}
+			Controller.RemoveWeapons();
+			PlayerGiveNamedItem(Controller, CsItem.Knife);
 
 			if (roundType.PrimaryPreference == WeaponType.Unknown) // Warmup or Random round types
 			{
@@ -235,33 +231,6 @@ public class ArenaPlayer
 		{
 			Plugin.Logger.LogError("Failed to give named item. It is recommended to disable 'metamod-skinchanger-compatibility' on this server. Error: " + e.Message);
 			player.GiveNamedItem(item);
-		}
-	}
-
-	public void RemovePlayerWeapons()
-	{
-		if (Controller.PlayerPawn.Value?.WeaponServices != null)
-		{
-			foreach (CHandle<CBasePlayerWeapon> weapon in Controller.PlayerPawn.Value.WeaponServices.MyWeapons)
-			{
-				if (weapon?.IsValid == true && weapon.Value != null)
-				{
-					CCSWeaponBase ccsWeaponBase = weapon.Value.As<CCSWeaponBase>();
-
-					if (ccsWeaponBase?.IsValid == true)
-					{
-						CCSWeaponBaseVData? weaponData = ccsWeaponBase.VData;
-
-						if (weaponData == null)
-							continue;
-
-						if (Config.CompatibilitySettings.CSSSkinchangerKnifeCompatibility && weaponData.GearSlot == gear_slot_t.GEAR_SLOT_KNIFE)
-							continue;
-
-						Controller.RemoveItemByDesignerName(weaponData.Name, false);
-					}
-				}
-			}
 		}
 	}
 }
