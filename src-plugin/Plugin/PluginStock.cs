@@ -230,5 +230,22 @@ namespace K4Arenas
 
 			return string.Join(", ", opponents.Where(p => p.IsValid).Select(p => p.Controller.PlayerName));
 		}
+
+		public static CsItem? FindEnumValueByEnumMemberValue(string? search)
+		{
+			if (search is null)
+				return null;
+
+			var type = typeof(CsItem);
+			foreach (var field in type.GetFields())
+			{
+				var attribute = field.GetCustomAttributes(typeof(EnumMemberAttribute), false).Cast<EnumMemberAttribute>().FirstOrDefault();
+				if (attribute?.Value == search)
+				{
+					return (CsItem?)field.GetValue(null);
+				}
+			}
+			return null;
+		}
 	}
 }

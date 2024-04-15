@@ -23,7 +23,8 @@ public class PluginK4ArenaRoundExample : BasePlugin
 		if (checkAPI != null)
 		{
 			// This registers the name, team size, start function, and end function for the special round.
-			RoundTypeID = checkAPI.AddSpecialRound("NameOfRound", 1, RoundStart, RoundEnd);
+			// False is the state of being enabled in the player's round preferences by default
+			RoundTypeID = checkAPI.AddSpecialRound("NameOfRound", 1, false, RoundStart, RoundEnd);
 		}
 		else
 			Logger.LogError("Failed to get shared API capability for K4-Arenas.");

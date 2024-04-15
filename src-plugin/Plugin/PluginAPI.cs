@@ -17,9 +17,9 @@ namespace K4Arenas
 
 	public class ArenaAPIHandler : IK4ArenaSharedApi
 	{
-		public int AddSpecialRound(string name, int teamSize, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> startFunction, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> endFunction)
+		public int AddSpecialRound(string name, int teamSize, bool enabledByDefault, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> startFunction, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> endFunction)
 		{
-			return RoundType.AddSpecialRoundType(name, teamSize, startFunction, endFunction);
+			return RoundType.AddSpecialRoundType(name, teamSize, enabledByDefault, startFunction, endFunction);
 		}
 
 		public void RemoveSpecialRound(int id)

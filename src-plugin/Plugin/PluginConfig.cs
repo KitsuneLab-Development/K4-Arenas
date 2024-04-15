@@ -108,7 +108,8 @@ namespace K4Arenas
 				UsePreferredSecondary = true,
 				PrimaryPreference = WeaponType.Unknown,
 				Armor = true,
-				Helmet = true
+				Helmet = true,
+				EnabledByDefault = false
 			},
 			new RoundTypeReader
 			{
@@ -118,7 +119,8 @@ namespace K4Arenas
 				UsePreferredSecondary = true,
 				PrimaryPreference = WeaponType.Unknown,
 				Armor = true,
-				Helmet = true
+				Helmet = true,
+				EnabledByDefault = false
 			},
 			new RoundTypeReader
 			{
@@ -199,22 +201,22 @@ namespace K4Arenas
 	public sealed class DefaultWeaponSettings
 	{
 		[JsonPropertyName("default-rifle")]
-		public int? DefaultRifle { get; set; } = null;
+		public string? DefaultRifle { get; set; } = null;
 
 		[JsonPropertyName("default-sniper")]
-		public int? DefaultSniper { get; set; } = null;
+		public string? DefaultSniper { get; set; } = null;
 
 		[JsonPropertyName("default-smg")]
-		public int? DefaultSMG { get; set; } = null;
+		public string? DefaultSMG { get; set; } = null;
 
 		[JsonPropertyName("default-lmg")]
-		public int? DefaultLMG { get; set; } = null;
+		public string? DefaultLMG { get; set; } = null;
 
 		[JsonPropertyName("default-shotgun")]
-		public int? DefaultShotgun { get; set; } = null;
+		public string? DefaultShotgun { get; set; } = null;
 
 		[JsonPropertyName("default-pistol")]
-		public int? DefaultPistol { get; set; } = null;
+		public string? DefaultPistol { get; set; } = null;
 	}
 
 	public sealed class DatabaseSettings

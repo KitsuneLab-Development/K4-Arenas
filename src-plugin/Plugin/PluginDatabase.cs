@@ -68,17 +68,17 @@ public sealed partial class Plugin : BasePlugin
 		using MySqlConnection connection = CreateConnection(Config);
 		await connection.OpenAsync();
 
-		string rounds = string.Join(",", RoundType.RoundTypes.Select(x => x.ID.ToString()));
+		string rounds = string.Join(",", RoundType.RoundTypes.Where(r => r.EnabledByDefault).Select(x => x.ID.ToString()));
 		await connection.ExecuteAsync(sqlInsertOrUpdate, new
 		{
 			SteamID,
 			Rounds = rounds,
-			dws.DefaultRifle,
-			dws.DefaultSniper,
-			dws.DefaultShotgun,
-			dws.DefaultSMG,
-			dws.DefaultLMG,
-			dws.DefaultPistol
+			DefaultRifle = FindEnumValueByEnumMemberValue(dws.DefaultRifle),
+			DefaultSniper = FindEnumValueByEnumMemberValue(dws.DefaultSniper),
+			DefaultShotgun = FindEnumValueByEnumMemberValue(dws.DefaultShotgun),
+			DefaultSMG = FindEnumValueByEnumMemberValue(dws.DefaultSMG),
+			DefaultLMG = FindEnumValueByEnumMemberValue(dws.DefaultLMG),
+			DefaultPistol = FindEnumValueByEnumMemberValue(dws.DefaultPistol)
 		});
 
 		dynamic? result = await connection.QuerySingleOrDefaultAsync<dynamic>(sqlSelect, new { SteamID });
