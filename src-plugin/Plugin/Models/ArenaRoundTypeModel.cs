@@ -60,7 +60,7 @@ namespace K4Arenas.Models
 			CsItem? PrimaryPreference = FindEnumValueByEnumMemberValue(roundType.PrimaryWeapon);
 			CsItem? SecondaryPreference = FindEnumValueByEnumMemberValue(roundType.SecondaryWeapon);
 
-			RoundTypes.Add(new RoundType(roundType.TranslationName, roundType.TeamSize, PrimaryPreference, SecondaryPreference, roundType.UsePreferredPrimary, roundType.PrimaryPreference, roundType.UsePreferredSecondary, roundType.Armor, roundType.Helmet));
+			RoundTypes.Add(new RoundType(roundType.TranslationName, roundType.TeamSize, PrimaryPreference, SecondaryPreference, roundType.UsePreferredPrimary, roundType.PrimaryPreference, roundType.UsePreferredSecondary, roundType.Armor, roundType.Helmet, roundType.EnabledByDefault));
 		}
 
 		public static int AddSpecialRoundType(string name, int teamSize, bool enabledByDefault, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> startFunction, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> endFunction)
