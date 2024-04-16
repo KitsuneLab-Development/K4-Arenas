@@ -7,6 +7,9 @@ namespace K4Arenas
 
 	public sealed class PluginConfig : BasePluginConfig
 	{
+		[JsonPropertyName("game-config")]
+		public bool LoadGameConfig { get; set; } = true;
+
 		[JsonPropertyName("database-settings")]
 		public DatabaseSettings DatabaseSettings { get; set; } = new DatabaseSettings();
 
@@ -16,8 +19,7 @@ namespace K4Arenas
 		[JsonPropertyName("round-settings")]
 		public List<RoundTypeReader> RoundSettings { get; set; } = new List<RoundTypeReader>
 		{
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.rifle",
 				TeamSize = 1,
 				UsePreferredPrimary = true,
@@ -26,8 +28,7 @@ namespace K4Arenas
 				Armor = true,
 				Helmet = true
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.sniper",
 				TeamSize = 1,
 				UsePreferredPrimary = true,
@@ -36,8 +37,7 @@ namespace K4Arenas
 				Armor = true,
 				Helmet = true
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.shotgun",
 				TeamSize = 1,
 				UsePreferredPrimary = true,
@@ -46,16 +46,14 @@ namespace K4Arenas
 				Armor = true,
 				Helmet = true
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.pistol",
 				TeamSize = 1,
 				UsePreferredSecondary = true,
 				Armor = true,
 				Helmet = true
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.scout",
 				TeamSize = 1,
 				PrimaryWeapon = "weapon_ssg08",
@@ -63,8 +61,7 @@ namespace K4Arenas
 				Armor = true,
 				Helmet = true
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.awp",
 				TeamSize = 1,
 				PrimaryWeapon = "weapon_awp",
@@ -72,16 +69,14 @@ namespace K4Arenas
 				Armor = true,
 				Helmet = true
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.deagle",
 				TeamSize = 1,
 				SecondaryWeapon = "weapon_deagle",
 				Armor = false,
 				Helmet = false
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.smg",
 				TeamSize = 1,
 				UsePreferredPrimary = true,
@@ -90,8 +85,7 @@ namespace K4Arenas
 				Armor = true,
 				Helmet = true
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.lmg",
 				TeamSize = 1,
 				UsePreferredPrimary = true,
@@ -100,8 +94,7 @@ namespace K4Arenas
 				Armor = true,
 				Helmet = true
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.2vs2",
 				TeamSize = 2,
 				UsePreferredPrimary = true,
@@ -111,8 +104,7 @@ namespace K4Arenas
 				Helmet = true,
 				EnabledByDefault = false
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.3vs3",
 				TeamSize = 3,
 				UsePreferredPrimary = true,
@@ -122,8 +114,7 @@ namespace K4Arenas
 				Helmet = true,
 				EnabledByDefault = false
 			},
-			new RoundTypeReader
-			{
+			new() {
 				TranslationName = "k4.rounds.knife",
 				TeamSize = 1,
 				Armor = false,
