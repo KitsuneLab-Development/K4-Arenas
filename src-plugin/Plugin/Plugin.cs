@@ -57,6 +57,7 @@
 
         public CCSGameRules? gameRules = null;
         public Timer? WarmupTimer { get; set; } = null;
+        public Timer? ForceClanTimer { get; set; } = null;
 
         public override void Load(bool hotReload)
         {
@@ -99,6 +100,29 @@
                     });
 
                 Server.ExecuteCommand("mp_restartgame 1");
+            }
+
+            //** ? Force Clantags */
+
+            if (Config.CompatibilitySettings.ForceArenaClantags)
+            {
+                ForceClanTimer = AddTimer(1, () =>
+                {
+                    if (Arenas is null) return;
+
+                    var validPlayers = Utilities.GetPlayers()
+                        .Where(p => p?.IsValid == true && p.PlayerPawn?.IsValid == true && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected);
+
+                    foreach (CCSPlayerController player in validPlayers)
+                    {
+                        string? requiredTag = GetRequiredTag(player);
+                        if (requiredTag != null && player.Clan != requiredTag)
+                        {
+                            player.Clan = requiredTag;
+                            Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+                        }
+                    }
+                }, TimerFlags.REPEAT);
             }
         }
 

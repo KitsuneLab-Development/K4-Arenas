@@ -138,16 +138,25 @@ public class ArenaPlayer
 
 					if (isRoundTypeEnabled)
 					{
-						RoundPreferences.Remove(roundType);
-						Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_removed", Localizer[roundType.Name]]}");
+						if (RoundPreferences.Count == 1)
+						{
+							Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_atleastone"]}");
+						}
+						else
+						{
+							RoundPreferences.Remove(roundType);
+							Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_removed", Localizer[roundType.Name]]}");
+
+							ShowRoundPreferenceMenu();
+						}
 					}
 					else
 					{
 						RoundPreferences.Add(roundType);
 						Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_added", Localizer[roundType.Name]]}");
-					}
 
-					ShowRoundPreferenceMenu();
+						ShowRoundPreferenceMenu();
+					}
 				}
 			);
 		}

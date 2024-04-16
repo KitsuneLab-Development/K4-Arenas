@@ -148,7 +148,7 @@ namespace K4Arenas
 
 		public RoundType GetCommonRoundType(List<RoundType>? roundPreferences1, List<RoundType>? roundPreferences2, bool multi)
 		{
-			List<RoundType> commonRounds = roundPreferences1?.Intersect(roundPreferences2 ?? Enumerable.Empty<RoundType>())?.ToList() ?? new List<RoundType>();
+			List<RoundType> commonRounds = roundPreferences1?.Intersect(roundPreferences2 ?? roundPreferences1)?.ToList() ?? new List<RoundType>();
 			List<RoundType> commonUsableRounds = multi ? commonRounds : commonRounds.Where(rt => rt.TeamSize < 2).ToList();
 
 			if (commonUsableRounds.Any())
@@ -247,5 +247,28 @@ namespace K4Arenas
 			}
 			return null;
 		}
+
+		public string? GetRequiredTag(CCSPlayerController player)
+		{
+			var arena = Arenas?.ArenaList.FirstOrDefault(a =>
+				(a.Team1?.Any(p => p.Controller == player) ?? false) ||
+				(a.Team2?.Any(p => p.Controller == player) ?? false));
+
+			if (arena != null)
+				return GetRequiredTag(arena.ArenaID);
+
+			if (WaitingArenaPlayers.Any(p => p.Controller == player))
+				return Localizer["k4.general.waiting"];
+
+			return null;
+		}
+
+		public string GetRequiredTag(int arenaID) =>
+			arenaID switch
+			{
+				-2 => $"{Localizer["k4.general.challenge"]} |",
+				-1 => $"{Localizer["k4.general.warmup"]} |",
+				_ => $"{Localizer["k4.general.arena"]} {arenaID} |",
+			};
 	}
 }

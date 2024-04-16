@@ -156,20 +156,7 @@ public class Arena
 
 				player.Controller.Score = ArenaScore;
 
-				switch (ArenaID)
-				{
-					case -2:
-						player.Controller.Clan = $"{Localizer["k4.general.challenge"]} |";
-						break;
-					case -1:
-						player.Controller.Clan = $"{Localizer["k4.general.warmup"]} |";
-						break;
-					default:
-						player.Controller.Clan = $"{Localizer["k4.general.arena"]} {ArenaID} |";
-						break;
-
-				}
-
+				player.Controller.Clan = Plugin.GetRequiredTag(ArenaID);
 				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");
 
 				player.Controller.SwitchTeam(switchTo);

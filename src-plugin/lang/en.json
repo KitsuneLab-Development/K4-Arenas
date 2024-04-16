@@ -34,6 +34,7 @@
 
   "k4.chat.round_preferences_added": "{silver}You have added {lime}{0}{silver} to your round preferences.",
   "k4.chat.round_preferences_removed": "{silver}You have removed {lime}{0}{silver} from your round preferences.",
+  "k4.chat.round_preferences_atleastone": "{lightred}You cannot disable all rounds. At least one round must be enabled.",
   "k4.chat.arena_roundstart": "{silver}You are in arena {lime}{0}{silver} against {lime}{1}{silver} and playing {lime}{2}{silver} round.",
   "k4.chat.arena_commands": "{silver}You can change your preferences with {lime}!{0}{silver} and {lime}!{1}{silver}.",
   "k4.chat.arena_afk": "{silver}You can go to AFK mode with {lime}!{0}{silver}.",

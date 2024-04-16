@@ -145,6 +145,9 @@ namespace K4Arenas
 	{
 		[JsonPropertyName("metamod-skinchanger-compatibility")]
 		public bool MetamodSkinchanger { get; set; } = false;
+
+		[JsonPropertyName("force-arena-clantags")]
+		public bool ForceArenaClantags { get; set; } = false;
 	}
 
 	public sealed class CommandSettings
