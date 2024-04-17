@@ -13,11 +13,13 @@ namespace K4Arenas
 		{
 			RegisterListener<Listeners.OnMapStart>((mapName) =>
 			{
-				CheckCommonProblems();
 				Task.Run(PurgeDatabaseAsync);
 
 				AddTimer(0.1f, () =>
 				{
+					GameConfig?.Apply();
+					CheckCommonProblems();
+
 					if (Arenas is null)
 						Arenas = new Arenas(this);
 
@@ -34,6 +36,7 @@ namespace K4Arenas
 							}
 							else
 							{
+								GameConfig?.Apply();
 								WarmupTimer?.Kill();
 							}
 						}, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
@@ -108,6 +111,7 @@ namespace K4Arenas
 				if (Arenas is null)
 					Arenas = new Arenas(this);
 
+				GameConfig?.Apply();
 				CheckCommonProblems();
 
 				Utilities.GetPlayers()

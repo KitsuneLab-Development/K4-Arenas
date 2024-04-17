@@ -26,7 +26,7 @@ namespace K4Arenas
 			if (players.Count(p => !p.IsBot) == 0)
 				return;
 
-			List<CCSPlayerController> alivePlayers = players.Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && x.PlayerPawn.Value?.Health > 0).ToList();
+			List<CCSPlayerController> alivePlayers = players.Where(x => x.PlayerPawn.Value?.Health > 0).ToList();
 
 			if (alivePlayers.Count == 0 || (team != null && alivePlayers.Count(x => x.Team == team) == 0))
 				return;
@@ -131,17 +131,13 @@ namespace K4Arenas
 		public void CheckCommonProblems()
 		{
 			// Common things that fuck up the gameplay
-			Server.ExecuteCommand("mp_halftime 0");
 			Server.ExecuteCommand("mp_join_grace_time 0");
 
-
-			// We handle weapons dont worry
+			// This could cause problems with the items
 			Server.ExecuteCommand("mp_t_default_secondary \"\"");
 			Server.ExecuteCommand("mp_ct_default_secondary \"\"");
 			Server.ExecuteCommand("mp_t_default_primary \"\"");
 			Server.ExecuteCommand("mp_ct_default_primary \"\"");
-
-			// This could cause problems with the items
 			Server.ExecuteCommand("mp_equipment_reset_rounds 0");
 			Server.ExecuteCommand("mp_free_armor 0");
 		}

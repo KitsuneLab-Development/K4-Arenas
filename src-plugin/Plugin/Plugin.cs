@@ -16,7 +16,7 @@
     {
         //** ? PLUGIN GLOBALS */
         public required PluginConfig Config { get; set; } = new PluginConfig();
-        private GameConfigLoader? _gameConfigLoader;
+        public GameConfig? GameConfig { get; set; }
         public static readonly Random rng = new();
         public static MemoryFunctionVoid<IntPtr, string, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr>? GiveNamedItem2;
 
@@ -62,22 +62,10 @@
 
         public override void Load(bool hotReload)
         {
-            _gameConfigLoader = new GameConfigLoader();
-            _gameConfigLoader.OnLoad(this);
-
-            if (Config.LoadGameConfig)
+            if (Config.UsePredefinedConfig)
             {
-                AddTimer(5, () =>
-                {
-                    if (_gameConfigLoader.ConfigsLoaded)
-                    {
-                        foreach (var gameConfig in _gameConfigLoader.GameConfigSettings!)
-                        {
-                            Console.WriteLine($"Executing command: {gameConfig.Key} {gameConfig.Value}");
-                            Server.ExecuteCommand($"{gameConfig.Key} {gameConfig.Value}");
-                        }
-                    }
-                });
+                GameConfig = new GameConfig(this);
+                GameConfig?.Apply();
             }
 
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ModulePath);

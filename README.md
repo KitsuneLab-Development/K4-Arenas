@@ -43,11 +43,18 @@ Your support keeps my creative engine running and allows me to share knowledge w
 
 <!-- ABOUT THE PROJECT -->
 
-### Dependencies
+### Gettings Started
 
-To use this server addon, you'll need the following dependencies installed:
+Every important information about the plugin can be found in the [Wiki](https://github.com/K4ryuu/K4-Arenas/wiki).
+This also includes settings, commands, map guidelines and more.
 
-- [**CounterStrikeSharp (200+)**](https://github.com/roflmuffin/CounterStrikeSharp/releases): CounterStrikeSharp allows you to write server plugins in C# for Counter-Strike 2/Source2/CS2
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CREDITS -->
+
+## Credits
+
+- [Mesharsky](https://github.com/Mesharsky): Predefined game configs
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

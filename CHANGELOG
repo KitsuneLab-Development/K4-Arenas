@@ -1,3 +1,10 @@
+-- 2024.04.17 - 1.3.7
+
+- feat: Add pre-defined game configs (by Mesharsky)
+- feat: Add Polish translation (by Mesharsky)
+- refactor: Remove some redundant code
+- fix: Arena finding algorithm now smart remove and repair
+
 -- 2024.04.15 - 1.3.6
 
 - feat: New option to disable round types befault in player preferences

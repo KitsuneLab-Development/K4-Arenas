@@ -1,14 +1,13 @@
 namespace K4Arenas
 {
 	using CounterStrikeSharp.API.Core;
-	using CounterStrikeSharp.API.Modules.Entities.Constants;
 	using K4Arenas.Models;
 	using System.Text.Json.Serialization;
 
 	public sealed class PluginConfig : BasePluginConfig
 	{
-		[JsonPropertyName("game-config")]
-		public bool LoadGameConfig { get; set; } = true;
+		[JsonPropertyName("use-predefined-config")]
+		public bool UsePredefinedConfig { get; set; } = true;
 
 		[JsonPropertyName("database-settings")]
 		public DatabaseSettings DatabaseSettings { get; set; } = new DatabaseSettings();
