@@ -24,9 +24,11 @@ public class Arenas
 		{
 			Arena arena = new Arena(Plugin, spawnPair);
 			ArenaList.Add(arena);
+
+			Plugin.Logger.LogInformation("New Arena has {1} CT spawns and {2} T spawns.", arena.Spawns.Item1.Count, arena.Spawns.Item2.Count);
 		}
 
-		Plugin.Logger.LogInformation("Succesfully setup {0} arenas!", ArenaList.Count);
+		Plugin.Logger.LogInformation("Successfully setup {0} arenas!", ArenaList.Count);
 	}
 
 	public int Count

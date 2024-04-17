@@ -32,12 +32,14 @@ public class ArenaFinder
 	public List<Tuple<List<SpawnPoint>, List<SpawnPoint>>> GetSpawnPairs()
 	{
 		var spawnPairs = new List<Tuple<List<SpawnPoint>, List<SpawnPoint>>>();
+		var spawnToRemove = new List<SpawnPoint>();
 
-		foreach (var ctSpawn in ctSpawns.Where(ct => ct.AbsOrigin != null))
+		foreach (var ctSpawn in ctSpawns.Where(ct => ct.AbsOrigin != null).ToList())
 		{
 			var closestTSpawn = tSpawns
 				.Where(t => t.AbsOrigin != null)
 				.Select(t => new { TSpawn = t, Distance = DistanceTo(ctSpawn.AbsOrigin!, t.AbsOrigin!) })
+				.Where(t => t.Distance < minEnemyDistance * 1.3)
 				.OrderBy(t => t.Distance)
 				.FirstOrDefault();
 
@@ -61,10 +63,65 @@ public class ArenaFinder
 				}
 
 				tSpawns.Remove(closestTSpawn.TSpawn);
+				spawnToRemove.Add(ctSpawn);
 			}
 		}
 
+		foreach (var spawn in spawnToRemove)
+		{
+			ctSpawns.Remove(spawn);
+		}
+
+		spawnToRemove.Clear();
+		var spawnLeftovers = new List<SpawnPoint>(tSpawns.Concat(ctSpawns));
+
+		foreach (var spawn in spawnLeftovers)
+		{
+			var existingPair = FindExistingPairSoloForSpawn(spawnPairs, spawn);
+
+			if (existingPair != null)
+			{
+				if (existingPair.Value.ct)
+				{
+					existingPair.Value.Item1.Add(spawn);
+				}
+				else
+				{
+					existingPair.Value.Item2.Add(spawn);
+				}
+
+				spawnToRemove.Add(spawn);
+			}
+		}
+
+		foreach (var spawn in spawnToRemove)
+		{
+			spawnLeftovers.Remove(spawn);
+		}
+
 		return spawnPairs;
+	}
+
+	private (List<SpawnPoint>, List<SpawnPoint>, bool ct)? FindExistingPairSoloForSpawn(List<Tuple<List<SpawnPoint>, List<SpawnPoint>>> pairs, SpawnPoint spawnToCheck)
+	{
+		foreach (var pair in pairs)
+		{
+			var ctDistance = DistanceTo(pair.Item1[0].AbsOrigin!, spawnToCheck.AbsOrigin!);
+
+			if (ctDistance < minEnemyDistance)
+			{
+				return (pair.Item1, pair.Item2, true);
+			}
+
+			var tDistance = DistanceTo(pair.Item2[0].AbsOrigin!, spawnToCheck.AbsOrigin!);
+
+			if (tDistance < minEnemyDistance)
+			{
+				return (pair.Item1, pair.Item2, false);
+			}
+		}
+
+		return null;
 	}
 
 	private Tuple<List<SpawnPoint>, List<SpawnPoint>>? FindExistingPairForSpawn(List<Tuple<List<SpawnPoint>, List<SpawnPoint>>> pairs, SpawnPoint ctSpawn, SpawnPoint tSpawn)
