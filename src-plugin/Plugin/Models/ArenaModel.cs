@@ -159,11 +159,13 @@ public class Arena
 				player.Controller.Clan = Plugin.GetRequiredTag(ArenaID);
 				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");
 
+				string arenaName = ArenaID == -1 ? Localizer["k4.general.warmup"] : Localizer["k4.general.arena", ArenaID];
+
 				player.Controller.SwitchTeam(switchTo);
 
 				if (ArenaID != -1)
 				{
-					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", ArenaID, Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
+					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
 				}
 
 				if (Plugin.gameRules?.WarmupPeriod == true)
@@ -247,6 +249,11 @@ public class Arena
 					{
 						Server.PrintToChatAll($"{Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.tie", Team1.First().Controller.PlayerName, Team2.First().Controller.PlayerName]}");
 						Result = new ArenaResult(ArenaResultType.Tie, null, null);
+
+						Team1.Concat(Team2)
+							.Where(p => p.Challenge is not null)
+							.ToList()
+							.ForEach(p => p.Challenge!.IsEnded = true);
 					}
 					else
 						Result = new ArenaResult(ArenaResultType.Tie, Team1, Team2);
@@ -260,6 +267,11 @@ public class Arena
 
 						Server.PrintToChatAll($"{Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.winner", winner.Controller.PlayerName, loser.Controller.PlayerName]}");
 						Result = new ArenaResult(ArenaResultType.Win, null, null);
+
+						Team1.Concat(Team2)
+							.Where(p => p.Challenge is not null)
+							.ToList()
+							.ForEach(p => p.Challenge!.IsEnded = true);
 					}
 					else
 					{

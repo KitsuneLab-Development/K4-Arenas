@@ -76,7 +76,7 @@ public class ArenaPlayer
 				else if (roundType.UsePreferredPrimary && roundType.PrimaryPreference != null && WeaponPreferences != null)
 				{
 					WeaponType primaryPreferenceType = (WeaponType)roundType.PrimaryPreference;
-					CsItem? primaryPreference = WeaponPreferences!.GetValueOrDefault(primaryPreferenceType) ?? null;
+					CsItem? primaryPreference = WeaponPreferences.GetValueOrDefault(primaryPreferenceType) ?? null;
 
 					if (primaryPreference == null)
 					{

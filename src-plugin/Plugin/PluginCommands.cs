@@ -64,7 +64,7 @@ namespace K4Arenas
 				return;
 			}
 
-			ArenaPlayer p2 = p1.Challenge.Player2;
+			ArenaPlayer p2 = p1.Challenge.Player1;
 
 			if (!p2.IsValid)
 			{
@@ -96,7 +96,7 @@ namespace K4Arenas
 				return;
 			}
 
-			ArenaPlayer p2 = p1.Challenge.Player2;
+			ArenaPlayer p2 = p1.Challenge.Player1;
 
 			if (!p2.IsValid)
 			{
@@ -138,7 +138,7 @@ namespace K4Arenas
 			CCSPlayerController challengedPlayer = targetResult.First();
 			ArenaPlayer? p2 = Arenas?.FindPlayer(challengedPlayer);
 
-			if (p2 is null)
+			if (p2 is null || p2 == p1)
 			{
 				info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.invalidtarget"]}");
 				return;

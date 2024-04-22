@@ -80,9 +80,6 @@ namespace K4Arenas
 
 			RegisterEventHandler((EventPlayerDisconnect @event, GameEventInfo info) =>
 			{
-				if (@event.Reason == 1)
-					return HookResult.Continue;
-
 				CCSPlayerController playerController = @event.Userid;
 
 				if (!playerController.IsValid)
@@ -239,6 +236,8 @@ namespace K4Arenas
 
 						if (team1.Count(p => p.IsValid) == 0 || team2.Count(p => p.IsValid) == 0)
 							continue;
+
+						notAFKrankedPlayers = new Queue<ArenaPlayer>(notAFKrankedPlayers.Except(team1.Concat(team2)));
 
 						Arenas.ArenaList[arenaID].AddChallengePlayers(team1, team2);
 						continue;

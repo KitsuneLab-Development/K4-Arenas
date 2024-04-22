@@ -266,5 +266,13 @@ namespace K4Arenas
 				-1 => $"{Localizer["k4.general.warmup"]} |",
 				_ => $"{Localizer["k4.general.arena"]} {arenaID} |",
 			};
+
+		public string GetRequiredArenaName(int arenaID) =>
+		arenaID switch
+		{
+			-2 => Localizer["k4.general.challenge"],
+			-1 => Localizer["k4.general.warmup"],
+			_ => $"{arenaID}"
+		};
 	}
 }
