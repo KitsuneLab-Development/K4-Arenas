@@ -10,11 +10,15 @@ namespace K4Arenas
 	using System.Data;
 	using CounterStrikeSharp.API.Modules.Entities.Constants;
 	using System.Runtime.Serialization;
+	using CounterStrikeSharp.API.Modules.Cvars;
 
 	public sealed partial class Plugin : BasePlugin
 	{
 		public void TerminateRoundIfPossible(CsTeam? team = null)
 		{
+			if (IsBetweenRounds)
+				return;
+
 			if (gameRules is null || gameRules.WarmupPeriod == true)
 				return;
 
@@ -50,7 +54,7 @@ namespace K4Arenas
 
 				Server.NextFrame(() =>
 				{
-					gameRules.TerminateRound(3, tCount > ctCount ? RoundEndReason.TerroristsWin : ctCount > tCount ? RoundEndReason.CTsWin : RoundEndReason.RoundDraw);
+					gameRules.TerminateRound(ConVar.Find("mp_round_restart_delay")?.GetPrimitiveValue<float>() ?? 3f, tCount > ctCount ? RoundEndReason.TerroristsWin : ctCount > tCount ? RoundEndReason.CTsWin : RoundEndReason.RoundDraw);
 				});
 			}
 		}

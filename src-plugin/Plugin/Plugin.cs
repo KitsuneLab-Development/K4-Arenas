@@ -20,6 +20,8 @@
         public static readonly Random rng = new();
         public static MemoryFunctionVoid<IntPtr, string, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr>? GiveNamedItem2;
 
+        public bool IsBetweenRounds = false;
+
         public void OnConfigParsed(PluginConfig config)
         {
             CheckCommonProblems();

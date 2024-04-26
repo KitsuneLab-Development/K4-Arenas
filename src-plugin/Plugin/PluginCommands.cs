@@ -7,6 +7,7 @@ namespace K4Arenas
 	using CounterStrikeSharp.API.Modules.Entities.Constants;
 	using CounterStrikeSharp.API.Modules.Utils;
 	using K4Arenas.Models;
+	using Microsoft.Extensions.Logging;
 
 	public sealed partial class Plugin : BasePlugin
 	{
@@ -194,6 +195,11 @@ namespace K4Arenas
 				player!.ChangeTeam(CsTeam.Spectator);
 				player.Clan = $"{Localizer["k4.general.afk"]} |";
 				Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+			}
+			else
+			{
+				arenaPlayer.Controller.Clan = $"{Localizer["k4.general.waiting"]} |";
+				Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
 			}
 
 			info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {(arenaPlayer.AFK ? string.Format(Localizer["k4.chat.afk_enabled"], Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")) : Localizer["k4.chat.afk_disabled"])}");

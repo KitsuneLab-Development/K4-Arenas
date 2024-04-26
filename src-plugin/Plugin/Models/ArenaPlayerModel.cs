@@ -110,7 +110,7 @@ public class ArenaPlayer
 					CCSPlayerPawn playerPawn = Controller.PlayerPawn.Value;
 
 					playerPawn.ArmorValue = roundType.Armor ? 100 : 0;
-					Utilities.SetStateChanged(playerPawn, "CCSPlayerPawnBase", "m_ArmorValue");
+					Utilities.SetStateChanged(playerPawn, "CCSPlayerPawn", "m_ArmorValue");
 
 
 					CCSPlayer_ItemServices itemServive = new CCSPlayer_ItemServices(playerPawn.ItemServices!.Handle)

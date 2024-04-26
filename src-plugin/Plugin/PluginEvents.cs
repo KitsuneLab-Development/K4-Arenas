@@ -281,8 +281,16 @@ namespace K4Arenas
 				return HookResult.Continue;
 			});
 
+			RegisterEventHandler((EventRoundStart @event, GameEventInfo info) =>
+			{
+				IsBetweenRounds = false;
+				return HookResult.Continue;
+			});
+
 			RegisterEventHandler((EventRoundEnd @event, GameEventInfo info) =>
 			{
+				IsBetweenRounds = true;
+
 				if (Arenas is null)
 					return HookResult.Continue;
 

@@ -1,3 +1,12 @@
+-- 2024.04.26 - 1.3.9
+
+- feat: Selecting SPEC/Teams toggles AFK mode automatically
+- fix: Auto team select being blocked
+- fix: Networking logs
+- fix: Using !afk to get out of AFK mode didnt change back the clantag
+- fix: Respect round restart delay (toorisrael)
+- fix: Duplicated round terminates after round ends
+
 -- 2024.04.21 - 1.3.8
 
 - fix: Challenge not ended properly
