@@ -11,6 +11,7 @@ namespace K4Arenas
 	using CounterStrikeSharp.API.Modules.Entities.Constants;
 	using System.Runtime.Serialization;
 	using CounterStrikeSharp.API.Modules.Cvars;
+	using Microsoft.Extensions.Logging;
 
 	public sealed partial class Plugin : BasePlugin
 	{

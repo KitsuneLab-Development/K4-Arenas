@@ -50,6 +50,7 @@ namespace K4Arenas
 				Arenas = null;
 
 				WaitingArenaPlayers.Clear();
+				IsBetweenRounds = false;
 			});
 
 			RegisterEventHandler((EventPlayerActivate @event, GameEventInfo info) =>
