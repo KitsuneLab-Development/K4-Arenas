@@ -128,7 +128,7 @@ namespace K4Arenas
 		public DefaultWeaponSettings DefaultWeaponSettings { get; set; } = new DefaultWeaponSettings();
 
 		[JsonPropertyName("ConfigVersion")]
-		public override int Version { get; set; } = 1;
+		public override int Version { get; set; } = 2;
 	}
 
 	public sealed class CompatibilitySettings
@@ -138,6 +138,12 @@ namespace K4Arenas
 
 		[JsonPropertyName("force-arena-clantags")]
 		public bool ForceArenaClantags { get; set; } = false;
+
+		[JsonPropertyName("block-flash-of-not-opponent")]
+		public bool BlockFlashOfNotOpponent { get; set; } = false;
+
+		[JsonPropertyName("block-damage-of-not-opponent")]
+		public bool BlockDamageOfNotOpponent { get; set; } = false;
 	}
 
 	public sealed class CommandSettings

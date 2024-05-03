@@ -18,15 +18,18 @@ namespace K4Arenas
 				AddCommand($"css_{commandString}", "Checks the queue position for the 1v1 arena", Command_Queue);
 			});
 
-			Config.CommandSettings.RoundsCommands.ForEach(commandString =>
+			if (HasDatabase)
 			{
-				AddCommand($"css_{commandString}", "Opens the round preference menu", Command_RoundPref);
-			});
+				Config.CommandSettings.RoundsCommands.ForEach(commandString =>
+				{
+					AddCommand($"css_{commandString}", "Opens the round preference menu", Command_RoundPref);
+				});
 
-			Config.CommandSettings.GunsCommands.ForEach(commandString =>
-			{
-				AddCommand($"css_{commandString}", "Opens the weapon preference menu", Command_WeaponPref);
-			});
+				Config.CommandSettings.GunsCommands.ForEach(commandString =>
+				{
+					AddCommand($"css_{commandString}", "Opens the weapon preference menu", Command_WeaponPref);
+				});
+			}
 
 			Config.CommandSettings.AFKCommands.ForEach(commandString =>
 			{

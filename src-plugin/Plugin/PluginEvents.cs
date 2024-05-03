@@ -101,6 +101,62 @@ namespace K4Arenas
 				return HookResult.Continue;
 			});
 
+			RegisterEventHandler<EventPlayerBlind>((@event, info) =>
+			{
+				if (!Config.CompatibilitySettings.BlockFlashOfNotOpponent)
+					return HookResult.Continue;
+
+				ArenaPlayer? attacker = Arenas?.FindPlayer(@event.Attacker);
+				ArenaPlayer? target = Arenas?.FindPlayer(@event.Userid);
+
+				if (Arenas is null || attacker is null || target is null)
+					return HookResult.Continue;
+
+				if (!attacker.IsValid || !target.IsValid)
+					return HookResult.Continue;
+
+				int attackerArenaNumber = Arenas.ArenaList.FindIndex(a => a.Team1?.Any(p => p == attacker) == true || a.Team2?.Any(p => p == attacker) == true);
+				int targetArenaNumber = Arenas.ArenaList.FindIndex(a => a.Team1?.Any(p => p == target) == true || a.Team2?.Any(p => p == target) == true);
+
+				if (attackerArenaNumber != targetArenaNumber)
+				{
+					if (target.Controller.PlayerPawn.Value != null)
+						target.Controller.PlayerPawn.Value.BlindUntilTime = Server.CurrentTime;
+				}
+
+				return HookResult.Continue;
+			});
+
+			RegisterEventHandler((EventPlayerHurt @event, GameEventInfo info) =>
+			{
+				if (!Config.CompatibilitySettings.BlockDamageOfNotOpponent)
+					return HookResult.Continue;
+
+
+				ArenaPlayer? attacker = Arenas?.FindPlayer(@event.Attacker);
+				ArenaPlayer? target = Arenas?.FindPlayer(@event.Userid);
+
+				if (Arenas is null || attacker is null || target is null)
+					return HookResult.Continue;
+
+				if (!attacker.IsValid || !target.IsValid)
+					return HookResult.Continue;
+
+				int attackerArenaNumber = Arenas.ArenaList.FindIndex(a => a.Team1?.Any(p => p == attacker) == true || a.Team2?.Any(p => p == attacker) == true);
+				int targetArenaNumber = Arenas.ArenaList.FindIndex(a => a.Team1?.Any(p => p == target) == true || a.Team2?.Any(p => p == target) == true);
+
+				if (attackerArenaNumber != targetArenaNumber)
+				{
+					if (target.Controller.PlayerPawn.Value != null)
+					{
+						target.Controller.PlayerPawn.Value.Health += @event.DmgHealth;
+						target.Controller.PlayerPawn.Value.ArmorValue += @event.DmgArmor;
+					}
+				}
+
+				return HookResult.Continue;
+			}, HookMode.Pre);
+
 			RegisterEventHandler((EventRoundPrestart @event, GameEventInfo info) =>
 			{
 				if (gameRules == null || gameRules.WarmupPeriod)
@@ -171,7 +227,35 @@ namespace K4Arenas
 
 				MoveQueue(arenaLosers, rankedPlayers);
 				MoveQueue(WaitingArenaPlayers, rankedPlayers);
-				MoveEndedChallengesToQueue(rankedPlayers);
+
+				var endedPlayers = Arenas.ArenaList
+					.SelectMany(a => (a.Team1 ?? new List<ArenaPlayer>()).Concat(a.Team2 ?? new List<ArenaPlayer>()))
+					.Where(player => player.Challenge != null && (player.Challenge.IsEnded || !player.Challenge.IsAccepted))
+					.Distinct();
+
+				if (endedPlayers.Count() > 0)
+				{
+					List<ArenaPlayer> rankedList = rankedPlayers.ToList();
+					foreach (ArenaPlayer player in endedPlayers)
+					{
+						ChallengeModel? challenge = player.Challenge;
+						if (challenge?.IsEnded == true)
+						{
+							int placement = player == challenge.Player1 ? challenge.Player1Placement : challenge.Player2Placement;
+							if (placement > rankedList.Count)
+							{
+								rankedList.Add(player);
+							}
+							else
+							{
+								rankedList.Insert(placement - 1, player);
+							}
+						}
+
+						player.Challenge = null;
+					}
+					rankedPlayers = new Queue<ArenaPlayer>(rankedList);
+				}
 
 				if (rankedPlayers.GroupBy(p => p.Controller).Any(g => g.Count() > 1))
 				{
@@ -211,14 +295,6 @@ namespace K4Arenas
 				}
 
 				bool anyTeamRoundTypes = RoundType.RoundTypes.Any(roundType => roundType.TeamSize > 1);
-
-				foreach (ArenaPlayer player in notAFKrankedPlayers)
-				{
-					if (player.Challenge?.IsAccepted == false)
-					{
-						player.Challenge = null;
-					}
-				}
 
 				Queue<ChallengeModel> challengeList = new Queue<ChallengeModel>(notAFKrankedPlayers
 					.Where(p => p.Challenge != null)

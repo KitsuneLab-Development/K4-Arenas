@@ -1,3 +1,11 @@
+-- 2024.04.26 - 1.4.1
+
+- feat: Add support for the plugin to work without database (disables preferences, experimental)
+- feat: Block damage from other arena players (useful for HvH, new ConVar)
+- feat: Block flashes from other arena players (useful for HvH, new ConVar)
+- fix: Unknown weapon type listed in preferences and throws error
+- fix: Challenges not ended properly
+
 -- 2024.04.26 - 1.3.10
 
 - fix: Team switch problems after mapchange

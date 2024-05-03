@@ -170,6 +170,9 @@ public class ArenaPlayer
 
 		foreach (WeaponType weaponType in Enum.GetValues(typeof(WeaponType)))
 		{
+			if (weaponType == WeaponType.Unknown)
+				continue;
+
 			weaponPreferenceMenu.AddMenuOption(Localizer[$"k4.rounds.{weaponType.ToString().ToLower()}"],
 				(player, option) =>
 				{

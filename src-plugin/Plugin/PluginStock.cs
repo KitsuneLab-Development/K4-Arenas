@@ -75,14 +75,18 @@ namespace K4Arenas
 				return arenaPlayer;
 
 			arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.queue_added", WaitingArenaPlayers.Count]}");
-			arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_commands", Config.CommandSettings.GunsCommands.FirstOrDefault("Missing"), Config.CommandSettings.RoundsCommands.FirstOrDefault("Missing")]}");
 			arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_afk", Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")]}");
 
-			ulong steamID = playerController.SteamID;
-			Task.Run(async () =>
+			if (HasDatabase)
 			{
-				await LoadPlayerAsync(steamID);
-			});
+				arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_commands", Config.CommandSettings.GunsCommands.FirstOrDefault("Missing"), Config.CommandSettings.RoundsCommands.FirstOrDefault("Missing")]}");
+
+				ulong steamID = playerController.SteamID;
+				Task.Run(async () =>
+				{
+					await LoadPlayerAsync(steamID);
+				});
+			}
 
 			return arenaPlayer;
 		}
@@ -196,6 +200,8 @@ namespace K4Arenas
 				if (!player.IsValid)
 					return;
 
+				player.Challenge = null;
+
 				if (placement > rankedList.Count)
 				{
 					rankedList.Add(player);
@@ -204,8 +210,6 @@ namespace K4Arenas
 				{
 					rankedList.Insert(placement - 1, player);
 				}
-
-				player.Challenge = null;
 			}
 		}
 

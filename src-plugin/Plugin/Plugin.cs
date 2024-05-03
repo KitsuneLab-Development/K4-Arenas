@@ -21,6 +21,7 @@
         public static MemoryFunctionVoid<IntPtr, string, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr>? GiveNamedItem2;
 
         public bool IsBetweenRounds = false;
+        public bool HasDatabase = false;
 
         public void OnConfigParsed(PluginConfig config)
         {
@@ -74,14 +75,14 @@
 
             if (!IsDatabaseConfigDefault(Config))
             {
+                HasDatabase = true;
+
                 Task.Run(CreateTableAsync).Wait();
                 Task.Run(PurgeDatabaseAsync);
             }
             else
             {
-                base.Logger.LogError("Please setup your MySQL database settings in the configuration file!");
-                Server.ExecuteCommand($"css_plugins unload {fileNameWithoutExtension}");
-                return;
+                base.Logger.LogError("Please setup your MySQL database settings in the configuration file in order to use the preferences system.");
             }
 
             //** ? Core */
