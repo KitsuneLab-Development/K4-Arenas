@@ -128,7 +128,7 @@ namespace K4Arenas
 		public DefaultWeaponSettings DefaultWeaponSettings { get; set; } = new DefaultWeaponSettings();
 
 		[JsonPropertyName("ConfigVersion")]
-		public override int Version { get; set; } = 2;
+		public override int Version { get; set; } = 3;
 	}
 
 	public sealed class CompatibilitySettings
@@ -144,6 +144,9 @@ namespace K4Arenas
 
 		[JsonPropertyName("block-damage-of-not-opponent")]
 		public bool BlockDamageOfNotOpponent { get; set; } = false;
+
+		[JsonPropertyName("give-knife-by-default")]
+		public bool GiveKnifeByDefault { get; set; } = true;
 	}
 
 	public sealed class CommandSettings

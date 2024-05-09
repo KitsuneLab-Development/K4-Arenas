@@ -55,9 +55,9 @@ namespace K4Arenas
 
 			RegisterEventHandler((EventPlayerActivate @event, GameEventInfo info) =>
 			{
-				CCSPlayerController playerController = @event.Userid;
+				CCSPlayerController? playerController = @event.Userid;
 
-				if (!playerController.IsValid)
+				if (playerController is null || !playerController.IsValid)
 					return HookResult.Continue;
 
 				if (playerController.IsHLTV)
@@ -81,9 +81,9 @@ namespace K4Arenas
 
 			RegisterEventHandler((EventPlayerDisconnect @event, GameEventInfo info) =>
 			{
-				CCSPlayerController playerController = @event.Userid;
+				CCSPlayerController? playerController = @event.Userid;
 
-				if (!playerController.IsValid)
+				if (playerController is null || !playerController.IsValid)
 					return HookResult.Continue;
 
 				if (!playerController.IsBot && !playerController.IsHLTV)
@@ -390,7 +390,7 @@ namespace K4Arenas
 
 			RegisterEventHandler((EventPlayerDeath @event, GameEventInfo info) =>
 			{
-				TerminateRoundIfPossible(@event.Userid.Team);
+				TerminateRoundIfPossible(@event.Userid?.Team);
 				return HookResult.Continue;
 			});
 

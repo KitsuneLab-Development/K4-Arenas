@@ -60,7 +60,9 @@ public class ArenaPlayer
 		if (this.IsValid)
 		{
 			Controller.RemoveWeapons();
-			PlayerGiveNamedItem(Controller, CsItem.Knife);
+
+			if (Config.CompatibilitySettings.GiveKnifeByDefault)
+				PlayerGiveNamedItem(Controller, CsItem.Knife);
 
 			if (roundType.PrimaryPreference == WeaponType.Unknown) // Warmup or Random round types
 			{

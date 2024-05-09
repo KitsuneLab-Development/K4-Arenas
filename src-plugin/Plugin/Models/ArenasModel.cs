@@ -34,7 +34,7 @@ public class Arenas
 		get { return ArenaList.Count; }
 	}
 
-	public ArenaPlayer? FindPlayer(CCSPlayerController player)
+	public ArenaPlayer? FindPlayer(CCSPlayerController? player)
 	{
 		IEnumerable<ArenaPlayer> allPlayers = Plugin.WaitingArenaPlayers
 			.Concat(ArenaList.SelectMany(x => x.Team1 ?? Enumerable.Empty<ArenaPlayer>()))

@@ -155,6 +155,13 @@ public class Arena
 				spawnsCopy.RemoveAt(randomSpawnIndex);
 
 				player.Controller.Score = ArenaScore;
+				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_iScore");
+
+				if (player.Controller.ActionTrackingServices != null)
+				{
+					player.Controller.ActionTrackingServices.MatchStats.Damage = ArenaScore;
+					Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_pActionTrackingServices");
+				}
 
 				player.Controller.Clan = Plugin.GetRequiredTag(ArenaID);
 				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");
@@ -176,7 +183,7 @@ public class Arena
 		}
 	}
 
-	public void SetupArenaPlayer(CCSPlayerController playerController)
+	public void SetupArenaPlayer(CCSPlayerController? playerController)
 	{
 		ArenaPlayer? player = Team1?.FirstOrDefault(p => p.IsValid && p.Controller == playerController) ?? Team2?.FirstOrDefault(p => p.IsValid && p.Controller == playerController);
 

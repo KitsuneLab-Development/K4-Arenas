@@ -1,3 +1,9 @@
+-- 2024.05.09 - 1.4.2
+
+- feat: New setting to disable knife giving by default (#14)
+- fix: Compile warning after CSS update
+- fix: Arena scoreboard order damage support, not just score
+
 -- 2024.04.26 - 1.4.1
 
 - feat: Add support for the plugin to work without database (disables preferences, experimental)
