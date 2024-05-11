@@ -2,17 +2,22 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
+using K4Arenas;
+using Microsoft.Extensions.Logging;
 
 public class ArenaFinder
 {
+	public Plugin Plugin;
 	private readonly List<SpawnPoint> ctSpawns;
 	private readonly List<SpawnPoint> tSpawns;
 	private readonly float minTeamDistance;
 	private readonly float minEnemyDistance;
 	private readonly float maxTeamDistance;
 
-	public ArenaFinder()
+	public ArenaFinder(Plugin plugin)
 	{
+		Plugin = plugin;
+
 		ctSpawns = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_counterterrorist").ToList();
 		tSpawns = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_terrorist").ToList();
 
@@ -23,6 +28,12 @@ public class ArenaFinder
 		CalculateDistances(tSpawns, tSpawns, spawnTeamDistances);
 
 		CalculateDistances(ctSpawns, tSpawns, spawnEnemyDistances);
+
+		if (spawnTeamDistances.Count == 0 || spawnEnemyDistances.Count == 0)
+		{
+			Plugin.Logger.LogCritical("This map has no spawns at all to find arenas for. Map: " + Server.MapName);
+			return;
+		}
 
 		minTeamDistance = spawnTeamDistances.Min();
 		maxTeamDistance = spawnTeamDistances.Max();

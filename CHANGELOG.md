@@ -1,3 +1,7 @@
+-- 2024.05.11 - 1.4.3
+
+- feat: Added log and stop to find arena if no spawns on the map at all (crash causer)
+
 -- 2024.05.09 - 1.4.2
 
 - feat: New setting to disable knife giving by default (#14)

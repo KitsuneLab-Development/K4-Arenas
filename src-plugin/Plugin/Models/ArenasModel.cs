@@ -18,7 +18,7 @@ public class Arenas
 
 		Plugin.CheckCommonProblems();
 
-		List<Tuple<List<SpawnPoint>, List<SpawnPoint>>> spawnPairs = new ArenaFinder().GetSpawnPairs();
+		List<Tuple<List<SpawnPoint>, List<SpawnPoint>>> spawnPairs = new ArenaFinder(this.Plugin).GetSpawnPairs();
 
 		foreach (Tuple<List<SpawnPoint>, List<SpawnPoint>> spawnPair in spawnPairs)
 		{
