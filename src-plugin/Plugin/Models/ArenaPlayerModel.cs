@@ -114,7 +114,6 @@ public class ArenaPlayer
 					playerPawn.ArmorValue = roundType.Armor ? 100 : 0;
 					Utilities.SetStateChanged(playerPawn, "CCSPlayerPawn", "m_ArmorValue");
 
-
 					CCSPlayer_ItemServices itemServive = new CCSPlayer_ItemServices(playerPawn.ItemServices!.Handle)
 					{
 						HasHelmet = roundType.Helmet

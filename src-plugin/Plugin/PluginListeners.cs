@@ -16,7 +16,7 @@ namespace K4Arenas
 
 		public HookResult ListenerJoinTeam(CCSPlayerController? player, CommandInfo info)
 		{
-			if (player?.IsValid == true && player.PlayerPawn?.IsValid == true && info.ArgByIndex(1) != "0")
+			if (player?.IsValid == true && player.PlayerPawn?.IsValid == true)
 			{
 				ArenaPlayer? arenaPlayer = Arenas?.FindPlayer(player);
 				if (arenaPlayer != null)
@@ -49,6 +49,12 @@ namespace K4Arenas
 
 					player.ExecuteClientCommand("play sounds/ui/weapon_cant_buy.vsnd_c");
 					return HookResult.Stop;
+				}
+				else
+				{
+					player.ChangeTeam(CsTeam.Spectator);
+					return HookResult.Stop;
+
 				}
 			}
 

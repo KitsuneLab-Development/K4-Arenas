@@ -56,9 +56,12 @@ public class ArenaFinder
 
 			if (closestTSpawn != null)
 			{
+				if (Plugin.Config.ArenaMathOverrides > 0 && closestTSpawn.Distance > Plugin.Config.ArenaMathOverrides)
+					continue;
+
 				Tuple<List<SpawnPoint>, List<SpawnPoint>>? existingPair = null;
 
-				if (minTeamDistance < minEnemyDistance && minEnemyDistance < maxTeamDistance)
+				if ((minTeamDistance < minEnemyDistance && minEnemyDistance < maxTeamDistance) || Plugin.Config.ArenaMathOverrides > 0)
 				{
 					existingPair = FindExistingPairForSpawn(spawnPairs, ctSpawn, closestTSpawn.TSpawn);
 				}
@@ -119,17 +122,23 @@ public class ArenaFinder
 		{
 			var ctDistance = DistanceTo(pair.Item1[0].AbsOrigin!, spawnToCheck.AbsOrigin!);
 
-			if (ctDistance < minEnemyDistance)
+			if (Plugin.Config.ArenaMathOverrides > 0)
 			{
-				return (pair.Item1, pair.Item2, true);
+				if (ctDistance < Plugin.Config.ArenaMathOverrides)
+					return (pair.Item1, pair.Item2, true);
 			}
+			else if (ctDistance < minEnemyDistance)
+				return (pair.Item1, pair.Item2, true);
 
 			var tDistance = DistanceTo(pair.Item2[0].AbsOrigin!, spawnToCheck.AbsOrigin!);
 
-			if (tDistance < minEnemyDistance)
+			if (Plugin.Config.ArenaMathOverrides > 0)
 			{
-				return (pair.Item1, pair.Item2, false);
+				if (tDistance < Plugin.Config.ArenaMathOverrides)
+					return (pair.Item1, pair.Item2, false);
 			}
+			else if (tDistance < minEnemyDistance)
+				return (pair.Item1, pair.Item2, false);
 		}
 
 		return null;
@@ -142,10 +151,13 @@ public class ArenaFinder
 			var ctDistance = DistanceTo(pair.Item1[0].AbsOrigin!, ctSpawn.AbsOrigin!);
 			var tDistance = DistanceTo(pair.Item2[0].AbsOrigin!, tSpawn.AbsOrigin!);
 
-			if (ctDistance < minEnemyDistance && tDistance < minEnemyDistance)
+			if (Plugin.Config.ArenaMathOverrides > 0)
 			{
-				return pair;
+				if (ctDistance < Plugin.Config.ArenaMathOverrides && tDistance < Plugin.Config.ArenaMathOverrides)
+					return pair;
 			}
+			else if (ctDistance < minEnemyDistance && tDistance < minEnemyDistance)
+				return pair;
 		}
 
 		return null;

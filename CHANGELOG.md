@@ -1,3 +1,10 @@
+-- 2024.06.02 - 1.4.4
+
+- feat: Experimental setting for arena math override (for wierd maps)
+- fix: Team assignment glitches
+- fix: Warmup stuck glitches
+- fix: Warmup not always respawn people
+
 -- 2024.05.11 - 1.4.3
 
 - feat: Added log and stop to find arena if no spawns on the map at all (crash causer)

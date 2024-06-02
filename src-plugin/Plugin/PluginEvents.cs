@@ -68,6 +68,12 @@ namespace K4Arenas
 
 				SetupPlayer(playerController);
 
+				/*if (Utilities.GetPlayers().Count(p => p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected) <= 1)
+				{
+					Server.ExecuteCommand("mp_restartgame 1");
+					return HookResult.Continue;
+				}*/
+
 				if (gameRules?.WarmupPeriod == false)
 				{
 					if (playerController.IsBot)

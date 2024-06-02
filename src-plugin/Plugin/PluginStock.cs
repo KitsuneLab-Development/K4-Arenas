@@ -62,9 +62,6 @@ namespace K4Arenas
 
 		public ArenaPlayer? SetupPlayer(CCSPlayerController playerController)
 		{
-			if (gameRules?.WarmupPeriod == false)
-				playerController.ChangeTeam(CsTeam.Spectator);
-
 			playerController.Clan = $"{Localizer[gameRules?.WarmupPeriod == true ? "k4.general.warmup" : "k4.general.waiting"]} |";
 			Utilities.SetStateChanged(playerController, "CCSPlayerController", "m_szClan");
 

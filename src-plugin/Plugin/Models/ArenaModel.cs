@@ -166,9 +166,13 @@ public class Arena
 				player.Controller.Clan = Plugin.GetRequiredTag(ArenaID);
 				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");
 
-				string arenaName = ArenaID == -1 ? Localizer["k4.general.warmup"] : Localizer["k4.general.arena", ArenaID];
-
 				player.Controller.SwitchTeam(switchTo);
+
+				Plugin.AddTimer(1.0f, () =>
+				{
+					if (player.IsValid && player.Controller.PlayerPawn.Value?.LifeState != (byte)LifeState_t.LIFE_ALIVE)
+						player.Controller.Respawn();
+				});
 
 				if (ArenaID != -1)
 				{
