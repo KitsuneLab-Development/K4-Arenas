@@ -2,6 +2,7 @@ namespace K4Arenas
 {
 	using CounterStrikeSharp.API;
 	using CounterStrikeSharp.API.Core;
+	using CounterStrikeSharp.API.Modules.Cvars;
 	using CounterStrikeSharp.API.Modules.Timers;
 	using CounterStrikeSharp.API.Modules.Utils;
 	using K4Arenas.Models;
@@ -25,7 +26,7 @@ namespace K4Arenas
 
 					gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
-					if (gameRules?.WarmupPeriod == true)
+					if (gameRules?.WarmupPeriod == true && ConVar.Find("mp_warmuptime")?.GetPrimitiveValue<float>() > 0.0f)
 					{
 						WarmupTimer = AddTimer(1.0f, () =>
 						{
@@ -67,12 +68,6 @@ namespace K4Arenas
 					return HookResult.Continue;
 
 				SetupPlayer(playerController);
-
-				/*if (Utilities.GetPlayers().Count(p => p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected) <= 1)
-				{
-					Server.ExecuteCommand("mp_restartgame 1");
-					return HookResult.Continue;
-				}*/
 
 				if (gameRules?.WarmupPeriod == false)
 				{
@@ -356,7 +351,8 @@ namespace K4Arenas
 					arenaPlayer.Controller.Clan = $"{Localizer["k4.general.waiting"]} |";
 					Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
 
-					arenaPlayer.Controller.ChangeTeam(CsTeam.Spectator);
+					if (arenaPlayer.PlayerIsSafe)
+						arenaPlayer.Controller.ChangeTeam(CsTeam.Spectator);
 
 					WaitingArenaPlayers.Enqueue(arenaPlayer);
 				}

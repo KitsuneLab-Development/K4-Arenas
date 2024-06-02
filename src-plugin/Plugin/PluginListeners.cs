@@ -50,12 +50,6 @@ namespace K4Arenas
 					player.ExecuteClientCommand("play sounds/ui/weapon_cant_buy.vsnd_c");
 					return HookResult.Stop;
 				}
-				else
-				{
-					player.ChangeTeam(CsTeam.Spectator);
-					return HookResult.Stop;
-
-				}
 			}
 
 			return HookResult.Continue;
