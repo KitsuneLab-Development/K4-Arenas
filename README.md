@@ -1,11 +1,11 @@
 <a name="readme-top"></a>
 
-![GitHub tag (with filter)](https://img.shields.io/github/v/tag/K4ryuu/K4-Arenas?style=for-the-badge&label=Version)
-![GitHub Repo stars](https://img.shields.io/github/stars/K4ryuu/K4-Arenas?style=for-the-badge)
-![GitHub issues](https://img.shields.io/github/issues/K4ryuu/K4-Arenas?style=for-the-badge)
-![GitHub](https://img.shields.io/github/license/K4ryuu/K4-Arenas?style=for-the-badge)
-![GitHub all releases](https://img.shields.io/github/downloads/K4ryuu/K4-Arenas/total?style=for-the-badge)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/K4ryuu/K4-Arenas/dev?style=for-the-badge)
+![GitHub tag (with filter)](https://img.shields.io/github/v/tag/KitsuneLab-Development/K4-Arenas?style=for-the-badge&label=Version)
+![GitHub Repo stars](https://img.shields.io/github/stars/KitsuneLab-Development/K4-Arenas?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues/KitsuneLab-Development/K4-Arenas?style=for-the-badge)
+![GitHub](https://img.shields.io/github/license/KitsuneLab-Development/K4-Arenas?style=for-the-badge)
+![GitHub all releases](https://img.shields.io/github/downloads/KitsuneLab-Development/K4-Arenas/total?style=for-the-badge)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/KitsuneLab-Development/K4-Arenas/dev?style=for-the-badge)
 
 <!-- PROJECT LOGO -->
 <br />
@@ -16,11 +16,11 @@
 
   <p align="center">
     <br />
-    <a href="https://github.com/K4ryuu/K4-Arenas/releases">Download</a>
+    <a href="https://github.com/KitsuneLab-Development/K4-Arenas/releases">Download</a>
     ·
-    <a href="https://github.com/K4ryuu/K4-Arenas/issues/new?assignees=KitsuneLab-Development&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D">Report Bug</a>
+    <a href="https://github.com/KitsuneLab-Development/K4-Arenas/issues/new?assignees=KitsuneLab-Development&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D">Report Bug</a>
     ·
-    <a href="https://github.com/K4ryuu/K4-Arenas/issues/new?assignees=KitsuneLab-Development&labels=enhancement&projects=&template=feature_request.md&title=%5BREQ%5D">Request Feature</a>
+    <a href="https://github.com/KitsuneLab-Development/K4-Arenas/issues/new?assignees=KitsuneLab-Development&labels=enhancement&projects=&template=feature_request.md&title=%5BREQ%5D">Request Feature</a>
   </p>
 </div>
 
@@ -45,7 +45,7 @@ Your support keeps my creative engine running and allows me to share knowledge w
 
 ### Gettings Started
 
-Every important information about the plugin can be found in the [Wiki](https://github.com/K4ryuu/K4-Arenas/wiki).
+Every important information about the plugin can be found in the [Wiki](https://github.com/KitsuneLab-Development/K4-Arenas/wiki).
 This also includes settings, commands, map guidelines and more.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
