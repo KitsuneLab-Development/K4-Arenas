@@ -3,7 +3,7 @@ name: Enhancement Request
 about: Suggest an enhancement for this project's existing feature
 title: '[ENHANCEMENT] Your Title Here'
 labels: 'Enhancement, Priority: Low'
-assignees: 'K4ryuu'
+assignees: ''
 
 ---
 
