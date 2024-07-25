@@ -3,7 +3,7 @@ name: Crash Report
 about: Report a crash to help us resolve issues faster
 title: '[CRASH] Your Title Here'
 labels: 'Crash, Priority: Critical'
-assignees: 'K4ryuu'
+assignees: ''
 
 ---
 
