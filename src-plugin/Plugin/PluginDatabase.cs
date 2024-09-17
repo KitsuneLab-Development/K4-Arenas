@@ -168,7 +168,7 @@ public sealed partial class Plugin : BasePlugin
 		catch (Exception ex)
 		{
 			await transaction.RollbackAsync();
-			Server.NextFrame(() => Logger.LogError("Failed to save player preferences: {0}", ex.Message));
+			Server.NextWorldUpdate(() => Logger.LogError("Failed to save player preferences: {0}", ex.Message));
 			throw;
 		}
 	}

@@ -5,41 +5,23 @@ using K4Arenas.Models;
 
 namespace K4Arenas.Models
 {
-	public struct RoundType
+	public struct RoundType(string name, int teamSize, CsItem? primary, CsItem? secondary, bool usePreferredPrimary = false, WeaponType? primaryPreference = null, bool usePreferredSecondary = false, bool armor = true, bool helmet = true, bool enabledByDefaultAction = true, Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? startFunction = null, Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? endFunction = null)
 	{
-		public static int nextID = 0;
+		private static int nextID = 0;
 
-		public readonly int ID;
-		public readonly string Name;
-		public readonly CsItem? PrimaryWeapon;
-		public readonly WeaponType? PrimaryPreference;
-		public readonly CsItem? SecondaryWeapon;
-		public readonly bool UsePreferredPrimary;
-		public readonly bool UsePreferredSecondary;
-		public readonly bool Armor;
-		public readonly bool Helmet;
-		public readonly int TeamSize;
-		public readonly bool EnabledByDefault;
-		public readonly Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? StartFunction;
-		public readonly Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? EndFunction;
-
-		public RoundType(string name, int teamSize, CsItem? primary, CsItem? secondary, bool usePreferredPrimary = false, WeaponType? primaryPreference = null, bool usePreferredSecondary = false, bool armor = true, bool helmet = true, bool enabledByDefaultAction = true, Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? startFunction = null, Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? endFunction = null)
-		{
-			ID = nextID++;
-			Name = name;
-			TeamSize = teamSize;
-			PrimaryWeapon = primary;
-			SecondaryWeapon = secondary;
-			UsePreferredPrimary = usePreferredPrimary;
-			UsePreferredSecondary = usePreferredSecondary;
-			Armor = armor;
-			Helmet = helmet;
-			PrimaryPreference = primaryPreference;
-			StartFunction = startFunction;
-			EndFunction = endFunction;
-			EnabledByDefault = enabledByDefaultAction;
-		}
-
+		public readonly int ID = nextID++;
+		public readonly string Name = name;
+		public readonly CsItem? PrimaryWeapon = primary;
+		public readonly WeaponType? PrimaryPreference = primaryPreference;
+		public readonly CsItem? SecondaryWeapon = secondary;
+		public readonly bool UsePreferredPrimary = usePreferredPrimary;
+		public readonly bool UsePreferredSecondary = usePreferredSecondary;
+		public readonly bool Armor = armor;
+		public readonly bool Helmet = helmet;
+		public readonly int TeamSize = teamSize;
+		public readonly bool EnabledByDefault = enabledByDefaultAction;
+		public readonly Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? StartFunction = startFunction;
+		public readonly Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? EndFunction = endFunction;
 		public static readonly RoundType Rifle = new RoundType("k4.rounds.rifle", 1, null, null, true, WeaponType.Rifle, true);
 		public static readonly RoundType Sniper = new RoundType("k4.rounds.sniper", 1, null, null, true, WeaponType.Sniper, true);
 		public static readonly RoundType Shotgun = new RoundType("k4.rounds.shotgun", 1, null, null, true, WeaponType.Shotgun, true);

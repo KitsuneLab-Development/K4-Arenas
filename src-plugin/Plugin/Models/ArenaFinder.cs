@@ -21,8 +21,8 @@ public class ArenaFinder
 		ctSpawns = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_counterterrorist").ToList();
 		tSpawns = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_terrorist").ToList();
 
-		List<float> spawnTeamDistances = new List<float>();
-		List<float> spawnEnemyDistances = new List<float>();
+		List<float> spawnTeamDistances = [];
+		List<float> spawnEnemyDistances = [];
 
 		CalculateDistances(ctSpawns, ctSpawns, spawnTeamDistances);
 		CalculateDistances(tSpawns, tSpawns, spawnTeamDistances);
@@ -163,7 +163,7 @@ public class ArenaFinder
 		return null;
 	}
 
-	private void CalculateDistances(List<SpawnPoint> sourceSpawns, List<SpawnPoint> targetSpawns, List<float> distances)
+	private static void CalculateDistances(List<SpawnPoint> sourceSpawns, List<SpawnPoint> targetSpawns, List<float> distances)
 	{
 		foreach (SpawnPoint sourceSpawn in sourceSpawns)
 		{
@@ -180,7 +180,7 @@ public class ArenaFinder
 		}
 	}
 
-	private float DistanceTo(Vector a, Vector b)
+	private static float DistanceTo(Vector a, Vector b)
 	{
 		return (float)Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y) + (a.Z - b.Z) * (a.Z - b.Z));
 	}

@@ -98,12 +98,14 @@ public struct WeaponModel
 
 	public static List<CsItem> GetAllPrimaryWeapons()
 	{
-		List<CsItem> allPrimaryWeapons = new List<CsItem>();
-		allPrimaryWeapons.AddRange(rifleItems);
-		allPrimaryWeapons.AddRange(sniperItems);
-		allPrimaryWeapons.AddRange(shotgunItems);
-		allPrimaryWeapons.AddRange(smgItems);
-		allPrimaryWeapons.AddRange(lmgItems);
+		List<CsItem> allPrimaryWeapons =
+		[
+			.. rifleItems,
+			.. sniperItems,
+			.. shotgunItems,
+			.. smgItems,
+			.. lmgItems,
+		];
 		return allPrimaryWeapons;
 	}
 

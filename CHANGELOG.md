@@ -1,3 +1,10 @@
+-- 2024.09.17 - 1.4.5
+
+- feat: MVPs adding only when playing in arena 1
+- upgrade: Round termination algorithm
+- optimise: Optimised the script here and there
+- fix: FlashXMLHintFix incompatibility
+
 -- 2024.06.02 - 1.4.4
 
 - feat: Experimental setting for arena math override (for wierd maps)

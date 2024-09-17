@@ -1,7 +1,5 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Cvars;
-using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -33,20 +31,13 @@ public class Arena
 	}
 
 	public bool IsActive
-	{
-		get
-		{
-			return Team1?.Count(p => p.IsValid && p.Controller.PlayerPawn?.Value?.Health > 0) > 0 && Team2?.Count(p => p.IsValid && p.Controller.PlayerPawn?.Value?.Health > 0) > 0;
-		}
-	}
+		=> Team1?.Any(p => p.IsValid && p.IsAlive) == true || Team2?.Any(p => p.IsValid && p.IsAlive) == true;
+
+	public bool HasFinished
+		=> !IsActive || Team1?.Any(p => p.IsValid && p.IsAlive) == false || Team2?.Any(p => p.IsValid && p.IsAlive) == false;
 
 	public bool HasRealPlayers
-	{
-		get
-		{
-			return Team1?.Count(p => p.IsValid && !p.Controller.IsBot) > 0 || Team2?.Count(p => p.IsValid && !p.Controller.IsBot) > 0;
-		}
-	}
+		=> Team1?.Any(p => p.IsValid && !p.Controller.IsBot) == true || Team2?.Any(p => p.IsValid && !p.Controller.IsBot) == true;
 
 	public void AddChallengePlayers(List<ArenaPlayer> team1, List<ArenaPlayer> team2)
 	{
@@ -56,7 +47,7 @@ public class Arena
 		RoundType = Plugin.GetCommonRoundType(team1.First().RoundPreferences, team2.First().RoundPreferences, false);
 		ArenaScore = 0;
 
-		var (t1Spawns, t2Spawns) = Plugin.rng.Next(0, 2) == 1 ? (Spawns.Item1, Spawns.Item2) : (Spawns.Item2, Spawns.Item1);
+		var (t1Spawns, t2Spawns) = Random.Shared.Next(0, 2) == 1 ? (Spawns.Item1, Spawns.Item2) : (Spawns.Item2, Spawns.Item1);
 
 		SetPlayerDetails(Team1, t1Spawns, CsTeam.Terrorist, Team2);
 		SetPlayerDetails(Team2, t2Spawns, CsTeam.CounterTerrorist, Team1);
@@ -74,7 +65,7 @@ public class Arena
 		if (Team1 is null && Team2 is null)
 			return;
 
-		var (t1Spawns, t2Spawns) = Plugin.rng.Next(0, 2) == 1 ? (Spawns.Item1, Spawns.Item2) : (Spawns.Item2, Spawns.Item1);
+		var (t1Spawns, t2Spawns) = Random.Shared.Next(0, 2) == 1 ? (Spawns.Item1, Spawns.Item2) : (Spawns.Item2, Spawns.Item1);
 
 		SetPlayerDetails(Team1, t1Spawns, CsTeam.Terrorist, Team2);
 		SetPlayerDetails(Team2, t2Spawns, CsTeam.CounterTerrorist, Team1);
@@ -93,7 +84,7 @@ public class Arena
 		RoundType = new RoundType("none", 1, null, null, false, WeaponType.Unknown, false);
 		ArenaScore = 0;
 
-		var (t1Spawns, t2Spawns) = Plugin.rng.Next(0, 2) == 1 ? (Spawns.Item1, Spawns.Item2) : (Spawns.Item2, Spawns.Item1);
+		var (t1Spawns, t2Spawns) = Random.Shared.Next(0, 2) == 1 ? (Spawns.Item1, Spawns.Item2) : (Spawns.Item2, Spawns.Item1);
 
 		bool arenaUpdated = false;
 
@@ -112,7 +103,7 @@ public class Arena
 		{
 			if (team == null && availablePlayers.TryDequeue(out ArenaPlayer? player))
 			{
-				team = new List<ArenaPlayer> { player };
+				team = [player];
 				Plugin.WaitingArenaPlayers = new Queue<ArenaPlayer>(Plugin.WaitingArenaPlayers.Where(p => p != player));
 				return true;
 			}
@@ -150,7 +141,10 @@ public class Arena
 		{
 			if (player?.IsValid == true)
 			{
-				int randomSpawnIndex = Plugin.rng.Next(0, spawnsCopy.Count);
+				player.Controller.MVPs = player.MVPs;
+				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_iMVPs");
+
+				int randomSpawnIndex = Random.Shared.Next(0, spawnsCopy.Count);
 				player.SpawnPoint = spawnsCopy[randomSpawnIndex];
 				spawnsCopy.RemoveAt(randomSpawnIndex);
 
@@ -189,43 +183,51 @@ public class Arena
 
 	public void SetupArenaPlayer(CCSPlayerController? playerController)
 	{
-		ArenaPlayer? player = Team1?.FirstOrDefault(p => p.IsValid && p.Controller == playerController) ?? Team2?.FirstOrDefault(p => p.IsValid && p.Controller == playerController);
+		if (playerController == null || !playerController.IsValid)
+			return;
 
-		if (player?.IsValid == true && player.Controller.PlayerPawn.Value != null)
+		ArenaPlayer? player = (Team1 ?? Enumerable.Empty<ArenaPlayer>())
+			.Concat(Team2 ?? Enumerable.Empty<ArenaPlayer>())
+			.FirstOrDefault(p => p.IsValid && p.Controller == playerController);
+
+		if (player?.IsValid != true || player.Controller.PlayerPawn.Value == null)
+			return;
+
+		SpawnPoint? playerSpawn = player.SpawnPoint;
+
+		if (playerSpawn == null)
 		{
-			SpawnPoint? playerSpawn = player.SpawnPoint;
+			Plugin.Logger.LogError($"Cannot spawn {player.Controller.PlayerName} because the spawn point is null");
+			return;
+		}
 
-			if (playerSpawn == null)
+		Vector? pos = playerSpawn.AbsOrigin;
+		QAngle? angle = playerSpawn.AbsRotation;
+
+		if (pos == null || angle == null)
+			return;
+
+		Vector velocity = new Vector(0, 0, 0);
+
+		player.Controller.PlayerPawn.Value.Teleport(pos, angle, velocity);
+		player.Controller.PlayerPawn.Value.Health = 100;
+
+		if (RoundType.StartFunction != null)
+		{
+			List<CCSPlayerController>? team1 = Team1?.Select(p => p.Controller).Where(c => c != null).ToList();
+			List<CCSPlayerController>? team2 = Team2?.Select(p => p.Controller).Where(c => c != null).ToList();
+
+			if (team1 == null && team2 == null)
 			{
-				Plugin.Logger.LogError("Cannot spawn {0} because the spawn point is null", player.Controller.PlayerName);
+				Plugin.Logger.LogWarning("Both teams are null in SetupArenaPlayer");
 				return;
 			}
 
-			Vector? pos = playerSpawn.AbsOrigin;
-			QAngle? angle = playerSpawn.AbsRotation;
-
-			if (pos == null || angle == null)
-				return;
-
-			Vector velocity = new Vector(0, 0, 0);
-
-			player.Controller.PlayerPawn.Value.Teleport(pos, angle, velocity);
-			player.Controller.PlayerPawn.Value.Health = 100;
-
-			if (RoundType.StartFunction != null)
-			{
-				List<CCSPlayerController>? team1 = Team1?.Select(p => p.Controller).ToList();
-				List<CCSPlayerController>? team2 = Team2?.Select(p => p.Controller).ToList();
-
-				if (team1 is null && team2 is null)
-					return;
-
-				Server.NextFrame(() => RoundType.StartFunction(team1, team2));
-			}
-			else
-			{
-				player.SetupWeapons(RoundType);
-			}
+			Server.NextWorldUpdate(() => RoundType.StartFunction(team1, team2));
+		}
+		else
+		{
+			player.SetupWeapons(RoundType);
 		}
 	}
 
@@ -246,7 +248,7 @@ public class Arena
 		{
 			if (Team1 == null || Team2 == null)
 			{
-				List<ArenaPlayer> winners = (Team1 == null ? Team2 : Team1)!;
+				List<ArenaPlayer> winners = (Team1 ?? Team2)!;
 				Result = new ArenaResult(ArenaResultType.NoOpponent, winners, null);
 			}
 			else
@@ -288,6 +290,15 @@ public class Arena
 					{
 						List<ArenaPlayer> winners = (team1Alive > team2Alive ? Team1 : Team2)!;
 						List<ArenaPlayer> losers = (team1Alive > team2Alive ? Team2 : Team1)!;
+
+						if (ArenaID == 1)
+						{
+							winners.ForEach(p =>
+							{
+								p.MVPs++;
+								Utilities.SetStateChanged(p.Controller, "CCSPlayerController", "m_iMVPs");
+							});
+						}
 
 						Result = new ArenaResult(ArenaResultType.Win, winners, losers);
 					}

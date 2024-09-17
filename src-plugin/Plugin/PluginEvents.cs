@@ -21,8 +21,7 @@ namespace K4Arenas
 					GameConfig?.Apply();
 					CheckCommonProblems();
 
-					if (Arenas is null)
-						Arenas = new Arenas(this);
+					Arenas ??= new Arenas(this);
 
 					gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
@@ -163,8 +162,7 @@ namespace K4Arenas
 				if (gameRules == null || gameRules.WarmupPeriod)
 					return HookResult.Continue;
 
-				if (Arenas is null)
-					Arenas = new Arenas(this);
+				Arenas ??= new Arenas(this);
 
 				GameConfig?.Apply();
 				CheckCommonProblems();
@@ -230,13 +228,13 @@ namespace K4Arenas
 				MoveQueue(WaitingArenaPlayers, rankedPlayers);
 
 				var endedPlayers = Arenas.ArenaList
-					.SelectMany(a => (a.Team1 ?? new List<ArenaPlayer>()).Concat(a.Team2 ?? new List<ArenaPlayer>()))
+					.SelectMany(a => (a.Team1 ?? []).Concat(a.Team2 ?? new List<ArenaPlayer>()))
 					.Where(player => player.Challenge != null && (player.Challenge.IsEnded || !player.Challenge.IsAccepted))
 					.Distinct();
 
-				if (endedPlayers.Count() > 0)
+				if (endedPlayers.Any())
 				{
-					List<ArenaPlayer> rankedList = rankedPlayers.ToList();
+					List<ArenaPlayer> rankedList = [.. rankedPlayers];
 					foreach (ArenaPlayer player in endedPlayers)
 					{
 						ChallengeModel? challenge = player.Challenge;
@@ -309,10 +307,10 @@ namespace K4Arenas
 					{
 						ChallengeModel challenge = challengeList.Dequeue()!;
 
-						List<ArenaPlayer> team1 = new List<ArenaPlayer> { challenge.Player1 };
-						List<ArenaPlayer> team2 = new List<ArenaPlayer> { challenge.Player2 };
+						List<ArenaPlayer> team1 = [challenge.Player1];
+						List<ArenaPlayer> team2 = [challenge.Player2];
 
-						if (team1.Count(p => p.IsValid) == 0 || team2.Count(p => p.IsValid) == 0)
+						if (!team1.Any(p => p.IsValid) || !team2.Any(p => p.IsValid))
 							continue;
 
 						notAFKrankedPlayers = new Queue<ArenaPlayer>(notAFKrankedPlayers.Except(team1.Concat(team2)));
@@ -334,7 +332,7 @@ namespace K4Arenas
 
 						RoundType roundType = GetCommonRoundType(player1.RoundPreferences, player2?.RoundPreferences, false);
 
-						Arenas.ArenaList[arenaID].AddPlayers(new List<ArenaPlayer> { player1 }, player2 != null ? new List<ArenaPlayer> { player2 } : null, roundType, displayIndex, (Arenas.Count - displayIndex) * 50);
+						Arenas.ArenaList[arenaID].AddPlayers([player1], player2 != null ? [player2] : null, roundType, displayIndex, (Arenas.Count - displayIndex) * 50);
 						displayIndex++;
 					}
 					else
@@ -390,15 +388,31 @@ namespace K4Arenas
 				return HookResult.Continue;
 			});
 
+			RegisterEventHandler((EventRoundMvp @event, GameEventInfo info) =>
+			{
+				CCSPlayerController? player = @event.Userid;
+				if (player is null || !player.IsValid)
+					return HookResult.Continue;
+
+				Server.NextWorldUpdate(() =>
+				{
+					player.MVPs -= 1;
+					Utilities.SetStateChanged(player, "CCSPlayerController", "m_iMVPs");
+				});
+
+				return HookResult.Continue;
+			});
+
 			RegisterEventHandler((EventPlayerDeath @event, GameEventInfo info) =>
 			{
-				TerminateRoundIfPossible(@event.Userid?.Team);
+				TerminateRoundIfPossible();
 				return HookResult.Continue;
 			});
 
 			RegisterEventHandler((EventPlayerTeam @event, GameEventInfo info) =>
 			{
 				info.DontBroadcast = true;
+				TerminateRoundIfPossible();
 				return HookResult.Changed;
 			}, HookMode.Pre);
 

@@ -29,10 +29,7 @@ public class Arenas
 		Plugin.Logger.LogInformation("Successfully setup {0} arenas!", ArenaList.Count);
 	}
 
-	public int Count
-	{
-		get { return ArenaList.Count; }
-	}
+	public int Count => ArenaList.Count;
 
 	public ArenaPlayer? FindPlayer(CCSPlayerController? player)
 	{
@@ -99,8 +96,5 @@ public class Arenas
 		}
 	}
 
-	public void Clear()
-	{
-		ArenaList.Clear();
-	}
+	public void Clear() => ArenaList.Clear();
 }

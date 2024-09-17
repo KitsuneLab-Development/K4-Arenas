@@ -21,6 +21,7 @@ public class ArenaPlayer
 	public readonly ulong SteamID;
 	public SpawnPoint? SpawnPoint;
 	public bool PlayerIsSafe;
+	public ushort MVPs = 0;
 
 	//** ? Settings */
 	public bool AFK = false;
@@ -48,81 +49,81 @@ public class ArenaPlayer
 	}
 
 	public bool IsValid
-	{
-		get
-		{
-			return Controller?.IsValid == true && Controller.PlayerPawn?.IsValid == true && Controller.Connected == PlayerConnectedState.PlayerConnected;
-		}
-	}
+		=> Controller?.IsValid == true && Controller.PlayerPawn?.IsValid == true && Controller.Connected == PlayerConnectedState.PlayerConnected;
+
+	public bool IsAlive
+		=> Controller.PlayerPawn?.Value?.Health > 0;
 
 	public void SetupWeapons(RoundType roundType)
 	{
-		if (this.IsValid)
+		if (!this.IsValid || Controller.PlayerPawn.Value == null)
 		{
-			Controller.RemoveWeapons();
+			Plugin.Logger.LogWarning($"Cannot setup weapons for invalid player or null pawn: {Controller.PlayerName}");
+			return;
+		}
 
-			if (Config.CompatibilitySettings.GiveKnifeByDefault)
-				PlayerGiveNamedItem(Controller, CsItem.Knife);
+		Controller.RemoveWeapons();
 
-			if (roundType.PrimaryPreference == WeaponType.Unknown) // Warmup or Random round types
+		if (Config.CompatibilitySettings.GiveKnifeByDefault)
+			PlayerGiveNamedItem(Controller, CsItem.Knife);
+
+		if (roundType.PrimaryPreference == WeaponType.Unknown) // Warmup or Random round types
+		{
+			PlayerGiveNamedItem(Controller, WeaponModel.GetRandomWeapon(WeaponType.Unknown));
+			PlayerGiveNamedItem(Controller, WeaponModel.GetRandomWeapon(WeaponType.Pistol));
+		}
+		else
+		{
+			if (roundType.PrimaryWeapon != null)
 			{
-				PlayerGiveNamedItem(Controller, WeaponModel.GetRandomWeapon(WeaponType.Unknown));
-				PlayerGiveNamedItem(Controller, WeaponModel.GetRandomWeapon(WeaponType.Pistol));
+				PlayerGiveNamedItem(Controller, (CsItem)roundType.PrimaryWeapon);
 			}
-			else
+			else if (roundType.UsePreferredPrimary && roundType.PrimaryPreference != null && WeaponPreferences != null)
 			{
-				if (roundType.PrimaryWeapon != null)
-				{
-					PlayerGiveNamedItem(Controller, (CsItem)roundType.PrimaryWeapon);
-				}
-				else if (roundType.UsePreferredPrimary && roundType.PrimaryPreference != null && WeaponPreferences != null)
-				{
-					WeaponType primaryPreferenceType = (WeaponType)roundType.PrimaryPreference;
-					CsItem? primaryPreference = WeaponPreferences.GetValueOrDefault(primaryPreferenceType) ?? null;
-
-					if (primaryPreference == null)
-					{
-						primaryPreference = WeaponModel.GetRandomWeapon(primaryPreferenceType);
-					}
-
-					PlayerGiveNamedItem(Controller, (CsItem)primaryPreference);
-				}
-
-				if (roundType.SecondaryWeapon != null)
-				{
-					PlayerGiveNamedItem(Controller, (CsItem)roundType.SecondaryWeapon);
-				}
-				else if (roundType.UsePreferredSecondary && WeaponPreferences != null)
-				{
-					CsItem? secondaryPreference = WeaponPreferences.GetValueOrDefault(WeaponType.Pistol) ?? null;
-
-					if (secondaryPreference == null)
-					{
-						secondaryPreference = WeaponModel.GetRandomWeapon(WeaponType.Pistol);
-					}
-
-					PlayerGiveNamedItem(Controller, (CsItem)secondaryPreference);
-				}
+				WeaponType primaryPreferenceType = (WeaponType)roundType.PrimaryPreference;
+				CsItem? primaryPreference = WeaponPreferences.GetValueOrDefault(primaryPreferenceType) ?? WeaponModel.GetRandomWeapon(primaryPreferenceType);
+				PlayerGiveNamedItem(Controller, (CsItem)primaryPreference);
 			}
 
-			Server.NextFrame(() =>
+			if (roundType.SecondaryWeapon != null)
 			{
-				if (Controller.PlayerPawn.Value != null)
+				PlayerGiveNamedItem(Controller, (CsItem)roundType.SecondaryWeapon);
+			}
+			else if (roundType.UsePreferredSecondary && WeaponPreferences != null)
+			{
+				CsItem? secondaryPreference = WeaponPreferences.GetValueOrDefault(WeaponType.Pistol) ?? WeaponModel.GetRandomWeapon(WeaponType.Pistol);
+				PlayerGiveNamedItem(Controller, (CsItem)secondaryPreference);
+			}
+		}
+
+		Server.NextWorldUpdate(() =>
+		{
+			if (Controller.PlayerPawn.Value != null)
+			{
+				CCSPlayerPawn playerPawn = Controller.PlayerPawn.Value;
+
+				playerPawn.ArmorValue = roundType.Armor ? 100 : 0;
+				Utilities.SetStateChanged(playerPawn, "CCSPlayerPawn", "m_ArmorValue");
+
+				if (playerPawn.ItemServices != null)
 				{
-					CCSPlayerPawn playerPawn = Controller.PlayerPawn.Value;
-
-					playerPawn.ArmorValue = roundType.Armor ? 100 : 0;
-					Utilities.SetStateChanged(playerPawn, "CCSPlayerPawn", "m_ArmorValue");
-
-					CCSPlayer_ItemServices itemServive = new CCSPlayer_ItemServices(playerPawn.ItemServices!.Handle)
+					CCSPlayer_ItemServices itemService = new CCSPlayer_ItemServices(playerPawn.ItemServices.Handle)
 					{
 						HasHelmet = roundType.Helmet
 					};
 
 					Utilities.SetStateChanged(playerPawn, "CBasePlayerPawn", "m_pItemServices");
 				}
-			});
-		}
+				else
+				{
+					Plugin.Logger.LogWarning($"ItemServices is null for player: {Controller.PlayerName}");
+				}
+			}
+			else
+			{
+				Plugin.Logger.LogWarning($"PlayerPawn is null for player: {Controller.PlayerName}");
+			}
+		});
 	}
 
 	public void ShowRoundPreferenceMenu()
