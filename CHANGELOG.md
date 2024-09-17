@@ -1,3 +1,7 @@
+-- 2024.09.17 - 1.4.6
+
+- fix: Cancel challanges if opponent gets to AFK to prevent exploits (Thanks to Siudzix)
+
 -- 2024.09.17 - 1.4.5
 
 - feat: MVPs adding only when playing in arena 1

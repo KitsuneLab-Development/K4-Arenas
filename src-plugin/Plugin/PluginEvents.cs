@@ -307,6 +307,20 @@ namespace K4Arenas
 					{
 						ChallengeModel challenge = challengeList.Dequeue()!;
 
+						bool player1IsAvailable = challenge.Player1.IsValid && challenge.Player1.Controller.Team > CsTeam.Spectator;
+						bool player2IsAvailable = challenge.Player2.IsValid && challenge.Player2.Controller.Team > CsTeam.Spectator;
+
+						if (!player1IsAvailable || !player2IsAvailable)
+						{
+							if (challenge.Player1.IsValid)
+								challenge.Player1.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.cancelled"]}");
+
+							if (challenge.Player2.IsValid)
+								challenge.Player2.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.cancelled"]}");
+
+							continue;
+						}
+
 						List<ArenaPlayer> team1 = [challenge.Player1];
 						List<ArenaPlayer> team2 = [challenge.Player2];
 

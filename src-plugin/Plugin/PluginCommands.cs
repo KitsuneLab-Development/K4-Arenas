@@ -4,10 +4,8 @@ namespace K4Arenas
 	using CounterStrikeSharp.API.Core;
 	using CounterStrikeSharp.API.Modules.Commands;
 	using CounterStrikeSharp.API.Modules.Commands.Targeting;
-	using CounterStrikeSharp.API.Modules.Entities.Constants;
 	using CounterStrikeSharp.API.Modules.Utils;
 	using K4Arenas.Models;
-	using Microsoft.Extensions.Logging;
 
 	public sealed partial class Plugin : BasePlugin
 	{
