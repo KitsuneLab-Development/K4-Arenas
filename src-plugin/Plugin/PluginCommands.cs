@@ -152,8 +152,8 @@ namespace K4Arenas
 				return;
 			}
 
-			int p1ArenaID = GetPlayerInArena(p1);
-			int p2ArenaID = GetPlayerInArena(p2);
+			int p1ArenaID = GetPlayerArenaID(p1);
+			int p2ArenaID = GetPlayerArenaID(p2);
 
 			if (p1ArenaID == -1 || p2ArenaID == -1)
 			{
@@ -167,16 +167,6 @@ namespace K4Arenas
 
 			info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.waiting", challengedPlayer.PlayerName]}");
 			challengedPlayer.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.request", player!.PlayerName, Config.CommandSettings.ChallengeAcceptCommands.FirstOrDefault("Missing"), Config.CommandSettings.ChallengeDeclineCommands.FirstOrDefault("Missing")]}");
-
-			int GetPlayerInArena(ArenaPlayer player)
-			{
-				int playerArenaID = Arenas!.ArenaList
-					.Where(a => a.Team1?.Any(p => p == player) == true || a.Team2?.Any(p => p == player) == true)
-					.Select(a => a.ArenaID)
-					.FirstOrDefault(-1);
-
-				return playerArenaID;
-			}
 		}
 
 		public void Command_AFK(CCSPlayerController? player, CommandInfo info)
@@ -194,13 +184,23 @@ namespace K4Arenas
 			if (arenaPlayer.AFK)
 			{
 				player!.ChangeTeam(CsTeam.Spectator);
-				player.Clan = $"{Localizer["k4.general.afk"]} |";
-				Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+				arenaPlayer.ArenaTag = $"{Localizer["k4.general.afk"]} |";
+
+				if (!Config.CompatibilitySettings.DisableClantags)
+				{
+					player.Clan = arenaPlayer.ArenaTag;
+					Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+				}
 			}
 			else
 			{
-				arenaPlayer.Controller.Clan = $"{Localizer["k4.general.waiting"]} |";
-				Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
+				arenaPlayer.ArenaTag = $"{Localizer["k4.general.waiting"]} |";
+
+				if (!Config.CompatibilitySettings.DisableClantags)
+				{
+					arenaPlayer.Controller.Clan = arenaPlayer.ArenaTag;
+					Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
+				}
 			}
 
 			info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {(arenaPlayer.AFK ? string.Format(Localizer["k4.chat.afk_enabled"], Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")) : Localizer["k4.chat.afk_disabled"])}");

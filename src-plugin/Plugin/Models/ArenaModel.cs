@@ -31,7 +31,7 @@ public class Arena
 	}
 
 	public bool IsActive
-		=> Team1?.Any(p => p.IsValid && p.IsAlive) == true || Team2?.Any(p => p.IsValid && p.IsAlive) == true;
+		=> Team1?.Any(p => p.IsValid) == true && Team2?.Any(p => p.IsValid) == true;
 
 	public bool HasFinished
 		=> !IsActive || Team1?.Any(p => p.IsValid && p.IsAlive) == false || Team2?.Any(p => p.IsValid && p.IsAlive) == false;
@@ -141,12 +141,12 @@ public class Arena
 		{
 			if (player?.IsValid == true)
 			{
-				player.Controller.MVPs = player.MVPs;
-				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_iMVPs");
-
 				int randomSpawnIndex = Random.Shared.Next(0, spawnsCopy.Count);
 				player.SpawnPoint = spawnsCopy[randomSpawnIndex];
 				spawnsCopy.RemoveAt(randomSpawnIndex);
+
+				player.Controller.MVPs = player.MVPs;
+				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_iMVPs");
 
 				player.Controller.Score = ArenaScore;
 				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_iScore");
@@ -157,10 +157,18 @@ public class Arena
 					Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_pActionTrackingServices");
 				}
 
-				player.Controller.Clan = Plugin.GetRequiredTag(ArenaID);
-				Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");
+				player.ArenaTag = Plugin.GetRequiredTag(ArenaID);
 
-				player.Controller.SwitchTeam(switchTo);
+				if (!Plugin.Config.CompatibilitySettings.DisableClantags)
+				{
+					player.Controller.Clan = player.ArenaTag;
+					Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");
+				}
+
+				if (player.Controller.Team > CsTeam.Spectator)
+					player.Controller.SwitchTeam(switchTo);
+				else
+					player.Controller.ChangeTeam(switchTo);
 
 				Plugin.AddTimer(1.0f, () =>
 				{

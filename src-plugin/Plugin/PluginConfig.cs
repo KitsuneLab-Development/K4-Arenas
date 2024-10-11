@@ -131,7 +131,7 @@ namespace K4Arenas
 		public int ArenaMathOverrides { get; set; } = 0;
 
 		[JsonPropertyName("ConfigVersion")]
-		public override int Version { get; set; } = 4;
+		public override int Version { get; set; } = 5;
 	}
 
 	public sealed class CompatibilitySettings
@@ -150,6 +150,9 @@ namespace K4Arenas
 
 		[JsonPropertyName("give-knife-by-default")]
 		public bool GiveKnifeByDefault { get; set; } = true;
+
+		[JsonPropertyName("disable-clantags")]
+		public bool DisableClantags { get; set; } = false;
 	}
 
 	public sealed class CommandSettings
@@ -201,6 +204,15 @@ namespace K4Arenas
 			"cdecline",
 			"cdeny"
 		};
+
+		[JsonPropertyName("center-menu-mode")]
+		public bool CenterMenuMode { get; set; } = true;
+
+		[JsonPropertyName("freeze-in-center-menu")]
+		public bool FreezeInMenu { get; set; } = true;
+
+		[JsonPropertyName("show-menu-credits")]
+		public bool ShowMenuCredits { get; set; } = true;
 	}
 
 	public sealed class DefaultWeaponSettings

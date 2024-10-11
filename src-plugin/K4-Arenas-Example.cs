@@ -53,4 +53,40 @@ public class PluginK4ArenaRoundExample : BasePlugin
 		// What to happen with the teams when the round is over, and the result is known
 		// Usefull for cleaning up shits
 	}
+
+	/***************************
+	 *  Example of AFK action  *
+	 ***************************/
+
+	// This is the method that will be called when the player is AFK
+	// This section can be copied 1:1 to any Anti-AFK plugin as it is due to it has all required methods with the most stable ways
+	// Compile this plugin with Arenas API, its not required to have it in the server, but it will be used if available
+
+	public static IK4ArenaSharedApi? SharedAPI_Arena { get; private set; }
+	public (bool ArenaFound, bool Checked) ArenaSupport = (false, false);
+	public void PerformAFKAction(CCSPlayerController player, bool afk)
+	{
+		if (!ArenaSupport.Checked) // We do check only once, so we basically cache the result
+		{
+			string arenaPath = Path.GetFullPath(Path.Combine(ModuleDirectory, "..", "K4-Arenas"));
+			ArenaSupport.ArenaFound = Directory.Exists(arenaPath);
+			ArenaSupport.Checked = true;
+		}
+
+		if (!ArenaSupport.ArenaFound)
+		{
+			// Arena not found, run your own logics here
+			return;
+		}
+
+		if (SharedAPI_Arena is null)
+		{
+			// This section won't be executed if Arena is not found, so wont cause issues from capability not found
+			PluginCapability<IK4ArenaSharedApi> Capability_SharedAPI = new("k4-arenas:sharedapi");
+			SharedAPI_Arena = Capability_SharedAPI.Get();
+		}
+
+		// Arena found, perform the action
+		SharedAPI_Arena?.PerformAFKAction(player, afk);
+	}
 }

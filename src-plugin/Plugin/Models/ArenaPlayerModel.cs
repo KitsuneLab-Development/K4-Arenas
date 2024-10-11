@@ -3,6 +3,8 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
+using Menu;
+using Menu.Enums;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -22,6 +24,8 @@ public class ArenaPlayer
 	public SpawnPoint? SpawnPoint;
 	public bool PlayerIsSafe;
 	public ushort MVPs = 0;
+	public bool Loaded = false;
+	public string ArenaTag = string.Empty;
 
 	//** ? Settings */
 	public bool AFK = false;
@@ -128,53 +132,104 @@ public class ArenaPlayer
 
 	public void ShowRoundPreferenceMenu()
 	{
-		ChatMenu roundPreferenceMenu = new ChatMenu(Localizer["k4.menu.roundpref.title"]);
+		if (Plugin.Config.CommandSettings.CenterMenuMode)
+		{
+			ShowCenterRoundPreferenceMenu();
+		}
+		else
+		{
+			ShowChatRoundPreferenceMenu();
+		}
+	}
 
+	private void ShowChatRoundPreferenceMenu()
+	{
+		ChatMenu roundPreferenceMenu = new ChatMenu(Localizer["k4.menu.roundpref.title"]);
 		foreach (RoundType roundType in RoundType.RoundTypes)
 		{
 			bool isRoundTypeEnabled = RoundPreferences.Contains(roundType);
 			roundPreferenceMenu.AddMenuOption(isRoundTypeEnabled ? Localizer["k4.menu.roundpref.item_enabled", Localizer[roundType.Name]] : Localizer["k4.menu.roundpref.item_disabled", Localizer[roundType.Name]],
 				(player, option) =>
 				{
-					ulong steamID = Controller.SteamID;
-
-					if (isRoundTypeEnabled)
-					{
-						if (RoundPreferences.Count == 1)
-						{
-							Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_atleastone"]}");
-						}
-						else
-						{
-							RoundPreferences.Remove(roundType);
-							Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_removed", Localizer[roundType.Name]]}");
-
-							ShowRoundPreferenceMenu();
-						}
-					}
-					else
-					{
-						RoundPreferences.Add(roundType);
-						Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_added", Localizer[roundType.Name]]}");
-
-						ShowRoundPreferenceMenu();
-					}
+					ToggleRoundPreference(roundType);
 				}
 			);
 		}
-
 		MenuManager.OpenChatMenu(Controller, roundPreferenceMenu);
+	}
+
+	private void ShowCenterRoundPreferenceMenu()
+	{
+		var items = new List<MenuItem>();
+		var defaultValues = new Dictionary<int, object>();
+
+		for (int i = 0; i < RoundType.RoundTypes.Count; i++)
+		{
+			RoundType roundType = RoundType.RoundTypes[i];
+			bool isRoundTypeEnabled = RoundPreferences.Contains(roundType);
+			items.Add(new MenuItem(MenuItemType.Bool, new MenuValue($"{Localizer[roundType.Name]}: ")));
+			defaultValues[i] = isRoundTypeEnabled;
+		}
+
+		Plugin.Menu?.ShowScrollableMenu(Controller, Localizer["k4.menu.roundpref.title"], items, (buttons, menu, selected) =>
+		{
+			if (selected == null) return;
+			if (buttons == MenuButtons.Select)
+			{
+				RoundType roundType = RoundType.RoundTypes[menu.Option];
+				bool newValue = selected.Data[0] == 1;
+				if (newValue != RoundPreferences.Contains(roundType))
+				{
+					ToggleRoundPreference(roundType);
+				}
+			}
+		}, false, Config.CommandSettings.FreezeInMenu, 5, defaultValues, Config.CommandSettings.ShowMenuCredits);
+	}
+
+	private void ToggleRoundPreference(RoundType roundType)
+	{
+		bool isRoundTypeEnabled = RoundPreferences.Contains(roundType);
+		if (isRoundTypeEnabled)
+		{
+			if (RoundPreferences.Count == 1)
+			{
+				Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_atleastone"]}");
+			}
+			else
+			{
+				RoundPreferences.Remove(roundType);
+				Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_removed", Localizer[roundType.Name]]}");
+			}
+		}
+		else
+		{
+			RoundPreferences.Add(roundType);
+			Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.round_preferences_added", Localizer[roundType.Name]]}");
+		}
+
+		if (!Config.CommandSettings.CenterMenuMode)
+			ShowRoundPreferenceMenu();
 	}
 
 	public void ShowWeaponPreferenceMenu()
 	{
-		ChatMenu weaponPreferenceMenu = new ChatMenu(Localizer["k4.menu.weaponpref.title"]);
+		if (Plugin.Config.CommandSettings.CenterMenuMode)
+		{
+			ShowCenterWeaponPreferenceMenu();
+		}
+		else
+		{
+			ShowChatWeaponPreferenceMenu();
+		}
+	}
 
+	private void ShowChatWeaponPreferenceMenu()
+	{
+		ChatMenu weaponPreferenceMenu = new ChatMenu(Localizer["k4.menu.weaponpref.title"]);
 		foreach (WeaponType weaponType in Enum.GetValues(typeof(WeaponType)))
 		{
 			if (weaponType == WeaponType.Unknown)
 				continue;
-
 			weaponPreferenceMenu.AddMenuOption(Localizer[$"k4.rounds.{weaponType.ToString().ToLower()}"],
 				(player, option) =>
 				{
@@ -182,21 +237,90 @@ public class ArenaPlayer
 				}
 			);
 		}
-
 		MenuManager.OpenChatMenu(Controller, weaponPreferenceMenu);
+	}
+
+	private void ShowCenterWeaponPreferenceMenu()
+	{
+		var items = new List<MenuItem>();
+		foreach (WeaponType weaponType in Enum.GetValues(typeof(WeaponType)))
+		{
+			if (weaponType == WeaponType.Unknown)
+				continue;
+			items.Add(new MenuItem(MenuItemType.Button, [new MenuValue($"{Localizer[$"k4.rounds.{weaponType.ToString().ToLower()}"]}: ")]));
+		}
+
+		Plugin.Menu?.ShowScrollableMenu(Controller, Localizer["k4.menu.weaponpref.title"], items, (buttons, menu, selected) =>
+		{
+			if (selected == null) return;
+			if (buttons == MenuButtons.Select)
+			{
+				WeaponType selectedWeaponType = (WeaponType)(menu.Option + 1);
+				ShowWeaponSubPreferenceMenu(selectedWeaponType);
+			}
+		}, false, Config.CommandSettings.FreezeInMenu, disableDeveloper: Config.CommandSettings.ShowMenuCredits);
 	}
 
 	public void ShowWeaponSubPreferenceMenu(WeaponType weaponType)
 	{
-		ChatMenu primaryPreferenceMenu = new ChatMenu(Localizer["k4.menu.weaponpref.title"]);
+		if (Plugin.Config.CommandSettings.CenterMenuMode)
+		{
+			ShowCenterWeaponSubPreferenceMenu(weaponType);
+		}
+		else
+		{
+			ShowChatWeaponSubPreferenceMenu(weaponType);
+		}
+	}
 
-		primaryPreferenceMenu.AddMenuOption(WeaponPreferences[weaponType] is null ? Localizer["k4.menu.weaponpref.item_enabled", Localizer["k4.general.random"]] : Localizer["k4.menu.weaponpref.item_disabled", Localizer["k4.general.random"]],
+	private void ShowChatWeaponSubPreferenceMenu(WeaponType weaponType)
+	{
+		ChatMenu primaryPreferenceMenu = new ChatMenu(Localizer["k4.menu.weaponpref.title"]);
+		AddWeaponOptions(primaryPreferenceMenu, weaponType);
+		MenuManager.OpenChatMenu(Controller, primaryPreferenceMenu);
+	}
+
+	private void ShowCenterWeaponSubPreferenceMenu(WeaponType weaponType)
+	{
+		var items = new List<MenuItem>();
+		var defaultValues = new Dictionary<int, object>();
+
+		items.Add(new MenuItem(MenuItemType.Bool, new MenuValue(Localizer["k4.general.random"])));
+		defaultValues[0] = WeaponPreferences[weaponType] == null;
+
+		List<CsItem> possibleItems = WeaponModel.GetWeaponList(weaponType);
+		for (int i = 0; i < possibleItems.Count; i++)
+		{
+			CsItem item = possibleItems[i];
+			if (WeaponModel.GetWeaponType(item) != weaponType)
+				continue;
+			items.Add(new MenuItem(MenuItemType.Bool, new MenuValue($"{Localizer[item.ToString()]}: ")));
+			defaultValues[i + 1] = WeaponPreferences[weaponType] == item;
+		}
+
+		Plugin.Menu?.ShowScrollableMenu(Controller, Localizer["k4.menu.weaponpref.title"], items, (buttons, menu, selected) =>
+		{
+			if (selected == null) return;
+			if (buttons == MenuButtons.Select)
+			{
+				if (menu.Option == 0)
+				{
+					SetWeaponPreference(weaponType, null);
+				}
+				else
+				{
+					SetWeaponPreference(weaponType, possibleItems[menu.Option - 1]);
+				}
+			}
+		}, true, Config.CommandSettings.FreezeInMenu, 5, defaultValues, Config.CommandSettings.ShowMenuCredits);
+	}
+
+	private void AddWeaponOptions(ChatMenu menu, WeaponType weaponType)
+	{
+		menu.AddMenuOption(WeaponPreferences[weaponType] is null ? Localizer["k4.menu.weaponpref.item_enabled", Localizer["k4.general.random"]] : Localizer["k4.menu.weaponpref.item_disabled", Localizer["k4.general.random"]],
 			(player, option) =>
 			{
-				WeaponPreferences[weaponType] = null;
-				Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.weapon_preferences_added", Localizer["k4.general.random"]]}");
-
-				ShowWeaponSubPreferenceMenu(weaponType);
+				SetWeaponPreference(weaponType, null);
 			}
 		);
 
@@ -205,20 +329,20 @@ public class ArenaPlayer
 		{
 			if (WeaponModel.GetWeaponType(item) != weaponType)
 				continue;
-
 			bool isItemEnabled = WeaponPreferences[weaponType] == item;
-			primaryPreferenceMenu.AddMenuOption(isItemEnabled ? Localizer["k4.menu.weaponpref.item_enabled", Localizer[item.ToString()]] : Localizer["k4.menu.weaponpref.item_disabled", Localizer[item.ToString()]],
+			menu.AddMenuOption(isItemEnabled ? Localizer["k4.menu.weaponpref.item_enabled", Localizer[item.ToString()]] : Localizer["k4.menu.weaponpref.item_disabled", Localizer[item.ToString()]],
 				(player, option) =>
 				{
-					WeaponPreferences[weaponType] = item;
-					Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.weapon_preferences_added", Localizer[item.ToString()]]}");
-
-					ShowWeaponSubPreferenceMenu(weaponType);
+					SetWeaponPreference(weaponType, item);
 				}
 			);
 		}
+	}
 
-		MenuManager.OpenChatMenu(Controller, primaryPreferenceMenu);
+	private void SetWeaponPreference(WeaponType weaponType, CsItem? item)
+	{
+		WeaponPreferences[weaponType] = item;
+		Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.weapon_preferences_added", Localizer[item?.ToString() ?? "k4.general.random"]]}");
 	}
 
 	public void PlayerGiveNamedItem(CCSPlayerController player, CsItem item)

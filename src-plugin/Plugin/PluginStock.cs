@@ -76,11 +76,16 @@ namespace K4Arenas
 
 			try
 			{
-				playerController.Clan = $"{Localizer[gameRules?.WarmupPeriod == true ? "k4.general.warmup" : "k4.general.waiting"]} |";
-				Utilities.SetStateChanged(playerController, "CCSPlayerController", "m_szClan");
-
 				ArenaPlayer arenaPlayer = new ArenaPlayer(this, playerController);
 				WaitingArenaPlayers.Enqueue(arenaPlayer);
+
+				arenaPlayer.ArenaTag = $"{Localizer[gameRules?.WarmupPeriod == true ? "k4.general.warmup" : "k4.general.waiting"]} |";
+
+				if (!Config.CompatibilitySettings.DisableClantags)
+				{
+					playerController.Clan = arenaPlayer.ArenaTag;
+					Utilities.SetStateChanged(playerController, "CCSPlayerController", "m_szClan");
+				}
 
 				if (!arenaPlayer.Controller.IsBot)
 				{
@@ -113,6 +118,16 @@ namespace K4Arenas
 				Logger.LogError($"Error in SetupPlayer: {ex.Message}");
 				return null;
 			}
+		}
+
+		public int GetPlayerArenaID(ArenaPlayer player)
+		{
+			int playerArenaID = Arenas!.ArenaList
+				.Where(a => a.Team1?.Any(p => p == player) == true || a.Team2?.Any(p => p == player) == true)
+				.Select(a => a.ArenaID)
+				.FirstOrDefault(-1);
+
+			return playerArenaID;
 		}
 
 		public bool CommandHelper(CCSPlayerController? player, CommandInfo info, CommandUsage usage, int argCount = 0, string? help = null, string? permission = null)

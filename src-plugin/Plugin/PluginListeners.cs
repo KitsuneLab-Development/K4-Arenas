@@ -28,8 +28,13 @@ namespace K4Arenas
 					{
 						arenaPlayer!.AFK = true;
 
-						player.Clan = $"{Localizer["k4.general.afk"]} |";
-						Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+						arenaPlayer.ArenaTag = $"{Localizer["k4.general.afk"]} |";
+
+						if (!Config.CompatibilitySettings.DisableClantags)
+						{
+							player.Clan = arenaPlayer.ArenaTag;
+							Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+						}
 
 						player!.ChangeTeam(CsTeam.Spectator);
 
@@ -40,8 +45,13 @@ namespace K4Arenas
 					{
 						arenaPlayer!.AFK = false;
 
-						arenaPlayer.Controller.Clan = $"{Localizer["k4.general.waiting"]} |";
-						Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
+						arenaPlayer.ArenaTag = $"{Localizer["k4.general.waiting"]} |";
+
+						if (!Config.CompatibilitySettings.DisableClantags)
+						{
+							arenaPlayer.Controller.Clan = arenaPlayer.ArenaTag;
+							Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
+						}
 
 						player.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_disabled"]}");
 						return HookResult.Continue;

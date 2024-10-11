@@ -90,7 +90,7 @@ namespace K4Arenas
 				{
 					ArenaPlayer? arenaPlayer = Arenas?.FindPlayer(playerController);
 
-					if (arenaPlayer is null)
+					if (arenaPlayer is null || !arenaPlayer.Loaded)
 						return HookResult.Continue;
 
 					Task.Run(() => SavePlayerPreferencesAsync(new List<ArenaPlayer> { arenaPlayer }));
@@ -284,8 +284,13 @@ namespace K4Arenas
 					{
 						player.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_reminder", Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")]}");
 
-						player.Controller.Clan = $"{Localizer["k4.general.afk"]} |";
-						Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");
+						player.ArenaTag = $"{Localizer["k4.general.afk"]} |";
+
+						if (!Config.CompatibilitySettings.DisableClantags)
+						{
+							player.Controller.Clan = player.ArenaTag;
+							Utilities.SetStateChanged(player.Controller, "CCSPlayerController", "m_szClan");
+						}
 
 						WaitingArenaPlayers.Enqueue(player);
 					}
@@ -360,8 +365,13 @@ namespace K4Arenas
 				{
 					ArenaPlayer arenaPlayer = notAFKrankedPlayers.Dequeue();
 
-					arenaPlayer.Controller.Clan = $"{Localizer["k4.general.waiting"]} |";
-					Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
+					arenaPlayer.ArenaTag = $"{Localizer["k4.general.waiting"]} |";
+
+					if (!Config.CompatibilitySettings.DisableClantags)
+					{
+						arenaPlayer.Controller.Clan = arenaPlayer.ArenaTag;
+						Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
+					}
 
 					if (arenaPlayer.PlayerIsSafe)
 						arenaPlayer.Controller.ChangeTeam(CsTeam.Spectator);

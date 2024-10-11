@@ -1,3 +1,14 @@
+-- 2024.10.08 - 1.5.0
+
+- feat: Added CenterMenu support using KitsuneMenu
+- feat: Added API to get current arena id for a player
+- feat: Added API to get arena name for a player (including WARMUP, CHALLANGE, WAITING, ARENA1, etc (for Zenith support))
+- feat: Added PerformAFKAction to API to allow AntiAFK plugins to support Arenas (see examples)
+- feat: Added option to disable clantag changes (better Zenith compatibility)
+- upgrade: CSS api compile version
+- fix: Fix round terminate issues (thanks for @letaryat)
+- fix: Breaking scoreboard with using 'mp_halftime 0' in the predefined configs
+
 -- 2024.09.17 - 1.4.6
 
 - fix: Cancel challanges if opponent gets to AFK to prevent exploits (Thanks to Siudzix)

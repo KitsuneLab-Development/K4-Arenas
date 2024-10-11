@@ -17,6 +17,7 @@
         //** ? PLUGIN GLOBALS */
         public required PluginConfig Config { get; set; } = new PluginConfig();
         public GameConfig? GameConfig { get; set; }
+        public Menu.KitsuneMenu Menu { get; private set; } = null!;
         public static readonly Random rng = new();
         public static MemoryFunctionVoid<IntPtr, string, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr>? GiveNamedItem2;
 
@@ -66,10 +67,7 @@
         public override void Load(bool hotReload)
         {
             if (Config.UsePredefinedConfig)
-            {
                 GameConfig = new GameConfig(this);
-                GameConfig?.Apply();
-            }
 
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ModulePath);
 
@@ -85,6 +83,8 @@
                 base.Logger.LogError("Please setup your MySQL database settings in the configuration file in order to use the preferences system.");
             }
 
+            Menu = new Menu.KitsuneMenu(this);
+
             //** ? Core */
 
             Initialize_API();
@@ -96,8 +96,7 @@
 
             if (hotReload)
             {
-                if (Arenas is null)
-                    Arenas = new Arenas(this);
+                Arenas ??= new Arenas(this);
 
                 gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
@@ -108,6 +107,8 @@
                     {
                         SetupPlayer(p);
                     });
+
+                GameConfig?.Apply();
 
                 Server.ExecuteCommand("mp_restartgame 1");
             }
@@ -128,8 +129,16 @@
                         string? requiredTag = GetRequiredTag(player);
                         if (requiredTag != null && player.Clan != requiredTag)
                         {
-                            player.Clan = requiredTag;
-                            Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+                            var arenaPlayer = Arenas.FindPlayer(player);
+                            if (arenaPlayer is null) continue;
+
+                            arenaPlayer.ArenaTag = requiredTag;
+
+                            if (!Config.CompatibilitySettings.DisableClantags)
+                            {
+                                player.Clan = arenaPlayer.ArenaTag;
+                                Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+                            }
                         }
                     }
                 }, TimerFlags.REPEAT);

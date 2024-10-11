@@ -22,8 +22,9 @@
       <HintPath>../src-shared/K4-ArenaSharedApi.dll</HintPath>
       <Private>false</Private>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
+    <Reference Include="KitsuneMenu">
+      <HintPath>/Users/sples/Projects/CS2_Random/Menu-main/src/bin/Release/net8.0/publish/KitsuneMenu.dll</HintPath>
+    </Reference>
     <None Update="lang\**\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <Target Name="CopyCustomFilesToPublishDirectory" AfterTargets="Publish">

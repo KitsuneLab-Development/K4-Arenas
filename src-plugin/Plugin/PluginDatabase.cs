@@ -129,6 +129,8 @@ public sealed partial class Plugin : BasePlugin
 				}
 
 				arenaPlayer.RoundPreferences = roundPreferences;
+
+				arenaPlayer.Loaded = true;
 			}
 		}
 	}

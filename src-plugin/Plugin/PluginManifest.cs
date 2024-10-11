@@ -10,7 +10,7 @@ namespace K4Arenas
 
         public override string ModuleAuthor => "K4ryuu";
 
-        public override string ModuleVersion => "1.4.6 " +
+        public override string ModuleVersion => "1.4.7 " +
 #if RELEASE
             "(release)";
 #else
