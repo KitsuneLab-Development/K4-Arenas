@@ -255,7 +255,7 @@ public class ArenaPlayer
 			if (selected == null) return;
 			if (buttons == MenuButtons.Select)
 			{
-				WeaponType selectedWeaponType = (WeaponType)(menu.Option + 1);
+				WeaponType selectedWeaponType = (WeaponType)(menu.Option);
 				ShowWeaponSubPreferenceMenu(selectedWeaponType);
 			}
 		}, false, Config.CommandSettings.FreezeInMenu, disableDeveloper: Config.CommandSettings.ShowMenuCredits);
@@ -310,6 +310,9 @@ public class ArenaPlayer
 				else
 				{
 					SetWeaponPreference(weaponType, possibleItems[menu.Option - 1]);
+					Plugin.Menu.ClearMenus(Controller);
+					ShowCenterWeaponPreferenceMenu();
+					ShowCenterWeaponSubPreferenceMenu(weaponType);
 				}
 			}
 		}, true, Config.CommandSettings.FreezeInMenu, 5, defaultValues, Config.CommandSettings.ShowMenuCredits);
