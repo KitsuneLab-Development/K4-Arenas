@@ -1,3 +1,8 @@
+-- 2024.10.24 - 1.5.1 - @originalaidn
+
+- fix: Rifle option in gun menu
+- fix: Multiple tick marks in guns pref menu
+
 -- 2024.10.08 - 1.5.0
 
 - feat: Added CenterMenu support using KitsuneMenu
