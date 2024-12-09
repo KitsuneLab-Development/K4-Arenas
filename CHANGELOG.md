@@ -1,3 +1,10 @@
+-- 2024.12.09 - 1.5.2
+
+- feat: Introduced a new menu API
+- fix: Removed unecessary : symbols in guns menu
+- fix: Selecting random in guns menu didn't update the menu properly
+- fix: Added missing : symbol to Random selections
+
 -- 2024.10.24 - 1.5.1 - @originalaidn
 
 - fix: Rifle option in gun menu

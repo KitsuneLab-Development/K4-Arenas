@@ -247,7 +247,7 @@ public class ArenaPlayer
 		{
 			if (weaponType == WeaponType.Unknown)
 				continue;
-			items.Add(new MenuItem(MenuItemType.Button, [new MenuValue($"{Localizer[$"k4.rounds.{weaponType.ToString().ToLower()}"]}: ")]));
+			items.Add(new MenuItem(MenuItemType.Button, [new MenuValue($"{Localizer[$"k4.rounds.{weaponType.ToString().ToLower()}"]}")]));
 		}
 
 		Plugin.Menu?.ShowScrollableMenu(Controller, Localizer["k4.menu.weaponpref.title"], items, (buttons, menu, selected) =>
@@ -285,7 +285,7 @@ public class ArenaPlayer
 		var items = new List<MenuItem>();
 		var defaultValues = new Dictionary<int, object>();
 
-		items.Add(new MenuItem(MenuItemType.Bool, new MenuValue(Localizer["k4.general.random"])));
+		items.Add(new MenuItem(MenuItemType.Bool, new MenuValue($"{Localizer["k4.general.random"]}: ")));
 		defaultValues[0] = WeaponPreferences[weaponType] == null;
 
 		List<CsItem> possibleItems = WeaponModel.GetWeaponList(weaponType);
@@ -303,17 +303,11 @@ public class ArenaPlayer
 			if (selected == null) return;
 			if (buttons == MenuButtons.Select)
 			{
-				if (menu.Option == 0)
-				{
-					SetWeaponPreference(weaponType, null);
-				}
-				else
-				{
-					SetWeaponPreference(weaponType, possibleItems[menu.Option - 1]);
-					Plugin.Menu.ClearMenus(Controller);
-					ShowCenterWeaponPreferenceMenu();
-					ShowCenterWeaponSubPreferenceMenu(weaponType);
-				}
+				SetWeaponPreference(weaponType, menu.Option == 0 ? null : possibleItems[menu.Option - 1]);
+
+				Plugin.Menu.ClearMenus(Controller);
+				ShowCenterWeaponPreferenceMenu();
+				ShowCenterWeaponSubPreferenceMenu(weaponType);
 			}
 		}, true, Config.CommandSettings.FreezeInMenu, 5, defaultValues, Config.CommandSettings.ShowMenuCredits);
 	}

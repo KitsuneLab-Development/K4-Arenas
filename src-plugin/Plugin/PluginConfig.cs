@@ -254,7 +254,7 @@ namespace K4Arenas
 		public int Port { get; set; } = 3306;
 
 		[JsonPropertyName("sslmode")]
-		public string Sslmode { get; set; } = "none";
+		public string Sslmode { get; set; } = "preferred";
 
 		[JsonPropertyName("table-prefix")]
 		public string TablePrefix { get; set; } = "";
