@@ -64,6 +64,7 @@ namespace K4Arenas
 
 			if (afk)
 			{
+				arenaPlayer!.AFK = true;
 				player!.ChangeTeam(CsTeam.Spectator);
 				arenaPlayer.ArenaTag = $"{plugin.Localizer["k4.general.afk"]} |";
 
