@@ -135,7 +135,7 @@ public class Arena
 		if (team is null)
 			return;
 
-		List<SpawnPoint> spawnsCopy = new List<SpawnPoint>(spawns);
+		List<SpawnPoint> spawnsCopy = [.. spawns];
 
 		foreach (ArenaPlayer player in team)
 		{
@@ -172,7 +172,7 @@ public class Arena
 
 				Plugin.AddTimer(1.0f, () =>
 				{
-					if (player.IsValid && player.Controller.PlayerPawn.Value?.LifeState != (byte)LifeState_t.LIFE_ALIVE)
+					if (player.IsValid && player.Controller.PlayerPawn.Value?.LifeState != (byte)LifeState_t.LIFE_ALIVE && player.Controller.Team > CsTeam.Spectator && !player.AFK)
 						player.Controller.Respawn();
 				});
 

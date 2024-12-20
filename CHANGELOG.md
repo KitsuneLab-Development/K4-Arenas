@@ -1,13 +1,18 @@
--- 2024.12.20 - 1.5.3
+-- 2024.12.20 - 1.5.4
 
 - fix: PerformAFKAction didnt change the AFK state of player
+- fix: Ghost respawning when using AFK command in the first one second after spawn
 
--- 2024.12.09 - 1.5.2
+-- 2024.12.09 - 1.5.3
 
 - feat: Introduced a new menu API
 - fix: Removed unecessary : symbols in guns menu
 - fix: Selecting random in guns menu didn't update the menu properly
 - fix: Added missing : symbol to Random selections
+
+-- 2024.12.?? - 1.5.2
+
+??? What happened here
 
 -- 2024.10.24 - 1.5.1 - @originalaidn
 
