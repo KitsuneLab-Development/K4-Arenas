@@ -1,3 +1,7 @@
+-- 2024.12.20 - 1.5.3
+
+- fix: PerformAFKAction didnt change the AFK state of player
+
 -- 2024.12.09 - 1.5.2
 
 - feat: Introduced a new menu API

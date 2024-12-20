@@ -62,6 +62,8 @@ namespace K4Arenas
 			if (arenaPlayer is null)
 				return;
 
+			arenaPlayer!.AFK = afk;
+
 			if (afk)
 			{
 				arenaPlayer!.AFK = true;
