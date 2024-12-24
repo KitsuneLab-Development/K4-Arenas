@@ -1,3 +1,7 @@
+-- 2024.12.23 - 1.5.5
+
+- feat: Added 3 new natives - IsAFK, FindOpponents & TerminateRoundIfPossible
+
 -- 2024.12.20 - 1.5.4
 
 - fix: PerformAFKAction didnt change the AFK state of player

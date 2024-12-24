@@ -178,7 +178,12 @@ public class Arena
 
 				if (ArenaID != -1)
 				{
-					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
+					// Bots plugin sets bot_prefix at EventRoundPreStart hence some delay to print opponent names
+					Server.NextWorldUpdate(() =>
+					{
+						if(player.Controller.IsValid)
+							player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
+					});
 				}
 
 				if (Plugin.gameRules?.WarmupPeriod == true)

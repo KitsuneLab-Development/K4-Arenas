@@ -24,8 +24,15 @@ public class GameConfig
 
 	public void Apply()
 	{
-		if (ConfigSettings is null)
-			return;
+		string filePath = Path.Combine(Plugin.ModuleDirectory, "gameconfig.cfg");
+
+		if (!File.Exists(filePath) || ConfigSettings is null)
+		{
+			Load();
+
+			if(ConfigSettings is null)
+				return;
+		}
 
 		foreach (var (key, value) in ConfigSettings)
 		{
@@ -63,7 +70,7 @@ public class GameConfig
 		var defaultConfigLines = new List<string>
 		{
 			"// Changing these might break the gamemode",
-			"bot_quota 0",
+			"bot_quota_mode \"normal\"",
 			"mp_autoteambalance 0",
 			"mp_ct_default_primary \"\"",
 			"mp_ct_default_secondary \"\"",

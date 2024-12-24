@@ -380,7 +380,7 @@ namespace K4Arenas
 				}
 
 				return HookResult.Continue;
-			});
+			}, HookMode.Pre);
 
 			RegisterEventHandler((EventRoundStart @event, GameEventInfo info) =>
 			{
