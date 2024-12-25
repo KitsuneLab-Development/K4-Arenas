@@ -35,9 +35,6 @@ public class Plugin : BasePlugin
 			gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
 			SharedAPI_Arena = Capability_SharedAPI.Get();
-
-			var quota = ConVar.Find("bot_quota_mode");
-			botQuotaMode = quota?.StringValue ?? "normal";
 		}
 
 		RegisterListener<Listeners.OnMapStart>((mapName) =>
@@ -46,9 +43,6 @@ public class Plugin : BasePlugin
 			AddTimer(0.1f, () =>
 			{
 				gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
-
-				var quota = ConVar.Find("bot_quota_mode");
-				botQuotaMode = quota?.StringValue ?? "normal";
 			});
 		});
 
@@ -61,7 +55,7 @@ public class Plugin : BasePlugin
 		{
 			var player = @event.Userid;
 
-			if(player == null || !player.IsValid || player.IsBot || player.IsHLTV || SharedAPI_Arena == null || SharedAPI_Arena.IsAFK(player))
+			if(player == null || !player.IsValid || player.IsBot || player.IsHLTV || SharedAPI_Arena?.IsAFK(player) == true)
 				return HookResult.Continue;
 
 			SpawnBotInEmptyArena(player);
@@ -73,7 +67,7 @@ public class Plugin : BasePlugin
 		{
 			var player = @event.Userid;
 
-			if(player == null || !player.IsValid || !player.IsBot)
+			if(player == null || !player.IsValid || player.IsHLTV || !player.IsBot)
 				return HookResult.Continue;
 
 			info.DontBroadcast = true;
@@ -82,7 +76,7 @@ public class Plugin : BasePlugin
 
 		RegisterEventHandler((EventRoundPrestart @event, GameEventInfo info) =>
 		{
-			if(gameRules == null || gameRules.WarmupPeriod || SharedAPI_Arena == null)
+			if(gameRules == null || gameRules.WarmupPeriod)
 			{
 				Server.ExecuteCommand($"bot_prefix \"WARMUP\"");
 				return HookResult.Continue;
@@ -96,8 +90,7 @@ public class Plugin : BasePlugin
 				return HookResult.Continue;
 			}
 
-			var bot = bots.First();
-			var arenaS = SharedAPI_Arena?.GetArenaName(bot) + " |" ?? "";
+			var arenaS = SharedAPI_Arena?.GetArenaName(bots.First()) + " |" ?? "";
 
 			Server.ExecuteCommand($"bot_prefix {arenaS}");
 			return HookResult.Continue;
@@ -110,24 +103,26 @@ public class Plugin : BasePlugin
 		});
 	}
 
-	private void SpawnBotInEmptyArena(CCSPlayerController? play, bool roundEnd = false)
+	private void SpawnBotInEmptyArena(CCSPlayerController? player, bool roundEnd = false)
 	{
-		if(gameRules == null || gameRules.WarmupPeriod || SharedAPI_Arena == null)
-			return;
-
 		(var players, var bots) = GetPlayers();
 
-		Logger.LogInformation($"Players: {players.Count()} | Bots: {bots.Count()}");
+		// Logger.LogInformation($"Players: {players.Count()} | Bots: {bots.Count()}");
 
-		if(players.Count() % 2 == 0)
+		botQuotaMode = ConVar.Find("bot_quota_mode")?.StringValue ?? "none";
+
+		if(players.Count() % 2 == 0 || botQuotaMode != "normal")
 		{
-			Logger.LogInformation($"Even players, no need to spawn bot.");
+			Logger.LogInformation($"Even players / botQuotaMode not normal, no need to spawn bot.");
 			if(bots.Count() > 0)
+			{
 				Server.ExecuteCommand("bot_quota 0");
+				Server.ExecuteCommand($"bot_prefix \"\"");
+			}
 			return;
 		}
 
-		if(play != null && SharedAPI_Arena.FindOpponents(play).Count() > 0)
+		if(player != null && SharedAPI_Arena?.FindOpponents(player).Count() > 0)
 			return;
 
 		if(!bots.Any() || bots.Count() > 1)
@@ -147,11 +142,13 @@ public class Plugin : BasePlugin
 		{
 			players = new();
 			bots = new();
+
 			(players, bots) = GetPlayers();
-			if(!bots.Any() || bots.First() == null)
+
+			if(!bots.Any())
 				return;
 
-			SharedAPI_Arena.TerminateRoundIfPossible();
+			SharedAPI_Arena?.TerminateRoundIfPossible();
 		});
 	}
 

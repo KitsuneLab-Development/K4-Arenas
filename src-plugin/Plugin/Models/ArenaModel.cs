@@ -178,8 +178,8 @@ public class Arena
 
 				if (ArenaID != -1)
 				{
-					// Bots plugin sets bot_prefix at EventRoundPreStart hence some delay to print opponent names
-					Server.NextWorldUpdate(() =>
+					// Bots plugin sets bot_prefix at EventRoundPreStart hence some delay to print opponent names. (Frame not enough sometimes)
+					Plugin.AddTimer(0.001f, () =>
 					{
 						if(player.Controller.IsValid)
 							player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
