@@ -187,7 +187,7 @@ public class Plugin : BasePlugin
 				continue;
 			}
 
-			if(controller.Connected == PlayerConnectedState.PlayerConnected)
+			if(controller.Connected == PlayerConnectedState.PlayerConnected && SharedAPI_Arena?.IsAFK(controller) == false)
 				players.Add(controller);
 		}
 		return (players, bots);

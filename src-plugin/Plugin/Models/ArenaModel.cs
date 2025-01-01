@@ -31,7 +31,7 @@ public class Arena
 	}
 
 	public bool IsActive
-		=> Team1?.Any(p => p.IsValid) == true && Team2?.Any(p => p.IsValid) == true;
+		=> Team1?.Any(p => p.IsValid && Plugin.Arenas?.FindPlayer(p.Controller)?.AFK == false) == true && Team2?.Any(p => p.IsValid && Plugin.Arenas?.FindPlayer(p.Controller)?.AFK == false) == true;
 
 	public bool HasFinished
 		=> !IsActive || Team1?.Any(p => p.IsValid && p.IsAlive) == false || Team2?.Any(p => p.IsValid && p.IsAlive) == false;

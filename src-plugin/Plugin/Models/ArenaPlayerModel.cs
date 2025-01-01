@@ -228,7 +228,7 @@ public class ArenaPlayer
 		ChatMenu weaponPreferenceMenu = new ChatMenu(Localizer["k4.menu.weaponpref.title"]);
 		foreach (WeaponType weaponType in Enum.GetValues(typeof(WeaponType)))
 		{
-			if (weaponType == WeaponType.Unknown)
+			if (weaponType == WeaponType.Unknown || !IsAllowedWeaponType(weaponType))
 				continue;
 			weaponPreferenceMenu.AddMenuOption(Localizer[$"k4.rounds.{weaponType.ToString().ToLower()}"],
 				(player, option) =>
@@ -243,11 +243,14 @@ public class ArenaPlayer
 	private void ShowCenterWeaponPreferenceMenu()
 	{
 		var items = new List<MenuItem>();
+		var values = new Dictionary<int, WeaponType>();
+		int count = 0;
 		foreach (WeaponType weaponType in Enum.GetValues(typeof(WeaponType)))
 		{
-			if (weaponType == WeaponType.Unknown)
+			if (weaponType == WeaponType.Unknown || !IsAllowedWeaponType(weaponType))
 				continue;
 			items.Add(new MenuItem(MenuItemType.Button, [new MenuValue($"{Localizer[$"k4.rounds.{weaponType.ToString().ToLower()}"]}")]));
+			values.Add(count++, weaponType);
 		}
 
 		Plugin.Menu?.ShowScrollableMenu(Controller, Localizer["k4.menu.weaponpref.title"], items, (buttons, menu, selected) =>
@@ -255,10 +258,24 @@ public class ArenaPlayer
 			if (selected == null) return;
 			if (buttons == MenuButtons.Select)
 			{
-				WeaponType selectedWeaponType = (WeaponType)(menu.Option);
+				WeaponType selectedWeaponType = values[menu.Option];
 				ShowWeaponSubPreferenceMenu(selectedWeaponType);
 			}
 		}, false, Config.CommandSettings.FreezeInMenu, disableDeveloper: Config.CommandSettings.ShowMenuCredits);
+	}
+
+	private bool IsAllowedWeaponType(WeaponType weaponType)
+	{
+		return weaponType switch
+		{
+			WeaponType.Rifle => Config.AllowedWeaponPreferences.Rifle,
+			WeaponType.Sniper => Config.AllowedWeaponPreferences.Sniper,
+			WeaponType.SMG => Config.AllowedWeaponPreferences.SMG,
+			WeaponType.LMG => Config.AllowedWeaponPreferences.LMG,
+			WeaponType.Shotgun => Config.AllowedWeaponPreferences.Shotgun,
+			WeaponType.Pistol => Config.AllowedWeaponPreferences.Pistol,
+			_ => false
+		};
 	}
 
 	public void ShowWeaponSubPreferenceMenu(WeaponType weaponType)
