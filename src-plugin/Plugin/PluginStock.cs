@@ -233,7 +233,21 @@ namespace K4Arenas
 				return Localizer["k4.general.no_opponent"];
 
 
-			return string.Join(", ", opponents.Where(p => p.IsValid).Select(p => p.Controller.PlayerName));
+			return string.Join(", ", opponents.Where(p => p.IsValid).Select(p => p.Controller.IsBot && !string.IsNullOrEmpty(GetArenaName(p.Controller)) ? $"{Localizer["k4.general.bot"]} " + p.Controller.PlayerName.Replace(GetArenaName(p.Controller), "").Replace("|", "") : p.Controller.PlayerName));
+		}
+
+		public string GetArenaName(CCSPlayerController player)
+		{
+			var arenaPlayer = Arenas?.FindPlayer(player);
+			if (arenaPlayer is not null)
+			{
+				string arenaTag = arenaPlayer.ArenaTag;
+				if (arenaTag.EndsWith(" |"))
+					arenaTag = arenaTag.Substring(0, arenaTag.Length - 2);
+
+				return arenaTag;
+			}
+			return string.Empty;
 		}
 
 		public static CsItem? FindEnumValueByEnumMemberValue(string? search)

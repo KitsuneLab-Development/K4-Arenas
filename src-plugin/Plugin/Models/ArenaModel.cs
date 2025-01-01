@@ -31,7 +31,7 @@ public class Arena
 	}
 
 	public bool IsActive
-		=> Team1?.Any(p => p.IsValid) == true && Team2?.Any(p => p.IsValid) == true;
+		=> Team1?.Any(p => p.IsValid && Plugin.Arenas?.FindPlayer(p.Controller)?.AFK == false) == true && Team2?.Any(p => p.IsValid && Plugin.Arenas?.FindPlayer(p.Controller)?.AFK == false) == true;
 
 	public bool HasFinished
 		=> !IsActive || Team1?.Any(p => p.IsValid && p.IsAlive) == false || Team2?.Any(p => p.IsValid && p.IsAlive) == false;
@@ -178,7 +178,12 @@ public class Arena
 
 				if (ArenaID != -1)
 				{
-					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
+					// Bots plugin sets bot_prefix at EventRoundPreStart hence some delay to print opponent names. (Frame not enough sometimes)
+					Plugin.AddTimer(0.001f, () =>
+					{
+						if(player.Controller.IsValid)
+							player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
+					});
 				}
 
 				if (Plugin.gameRules?.WarmupPeriod == true)

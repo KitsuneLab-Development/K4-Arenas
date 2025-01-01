@@ -8,6 +8,9 @@ namespace K4ArenaSharedApi
 		public void RemoveSpecialRound(int id);
 		public int GetArenaPlacement(CCSPlayerController player);
 		public string GetArenaName(CCSPlayerController player);
+		public bool IsAFK(CCSPlayerController player);
+		public List<CCSPlayerController> FindOpponents(CCSPlayerController player);
+		public void TerminateRoundIfPossible();
 		public void PerformAFKAction(CCSPlayerController player, bool afk);
 	}
 }
