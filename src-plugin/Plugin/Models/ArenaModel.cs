@@ -304,6 +304,7 @@ public class Arena
 							winners.ForEach(p =>
 							{
 								p.MVPs++;
+								p.Controller.MVPs = p.MVPs;
 								Utilities.SetStateChanged(p.Controller, "CCSPlayerController", "m_iMVPs");
 							});
 						}

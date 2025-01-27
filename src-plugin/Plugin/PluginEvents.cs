@@ -414,17 +414,7 @@ namespace K4Arenas
 
 			RegisterEventHandler((EventRoundMvp @event, GameEventInfo info) =>
 			{
-				CCSPlayerController? player = @event.Userid;
-				if (player is null || !player.IsValid)
-					return HookResult.Continue;
-
-				Server.NextWorldUpdate(() =>
-				{
-					player.MVPs -= 1;
-					Utilities.SetStateChanged(player, "CCSPlayerController", "m_iMVPs");
-				});
-
-				return HookResult.Continue;
+				return HookResult.Handled;
 			});
 
 			RegisterEventHandler((EventPlayerDeath @event, GameEventInfo info) =>
@@ -437,6 +427,52 @@ namespace K4Arenas
 			{
 				info.DontBroadcast = true;
 				TerminateRoundIfPossible();
+
+				var player = @event.Userid;
+				if (player is null || !player.IsValid)
+					return HookResult.Continue;
+
+				var oldTeam = (CsTeam)@event.Oldteam;
+				var newTeam = (CsTeam)@event.Team;
+
+				if (oldTeam == CsTeam.None || (oldTeam > CsTeam.Spectator && newTeam > CsTeam.Spectator))
+					return HookResult.Continue;
+
+				ArenaPlayer? arenaPlayer = Arenas?.FindPlayer(player);
+
+				if (arenaPlayer?.AFK == false && player.Team != CsTeam.Spectator && newTeam == CsTeam.Spectator)
+				{
+					arenaPlayer!.AFK = true;
+
+					arenaPlayer.ArenaTag = $"{Localizer["k4.general.afk"]} |";
+
+					if (!Config.CompatibilitySettings.DisableClantags)
+					{
+						player.Clan = arenaPlayer.ArenaTag;
+						Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
+					}
+
+					player!.ChangeTeam(CsTeam.Spectator);
+
+					player.PrintToChat($" {Localizer["k4.general.prefix"]} {string.Format(Localizer["k4.chat.afk_enabled"], Config.CommandSettings.AFKCommands.FirstOrDefault("Missing"))}");
+					return HookResult.Stop;
+				}
+				else if (arenaPlayer?.AFK == true && player.Team == CsTeam.Spectator && newTeam > CsTeam.Spectator)
+				{
+					arenaPlayer!.AFK = false;
+
+					arenaPlayer.ArenaTag = $"{Localizer["k4.general.waiting"]} |";
+
+					if (!Config.CompatibilitySettings.DisableClantags)
+					{
+						arenaPlayer.Controller.Clan = arenaPlayer.ArenaTag;
+						Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
+					}
+
+					player.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_disabled"]}");
+					return HookResult.Continue;
+				}
+
 				return HookResult.Changed;
 			}, HookMode.Pre);
 

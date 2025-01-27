@@ -1,3 +1,7 @@
+-- 2025.01.27 - 1.5.5
+
+- feat: The plugin now detect team changes from Anti-AFK or 3rd party plugins to perform arena AFK
+
 -- 2024.12.20 - 1.5.4
 
 - fix: PerformAFKAction didnt change the AFK state of player

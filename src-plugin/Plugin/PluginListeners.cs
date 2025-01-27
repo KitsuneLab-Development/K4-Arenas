@@ -26,34 +26,10 @@ namespace K4Arenas
 				{
 					if (arenaPlayer?.AFK == false && player.Team != CsTeam.Spectator && info.ArgByIndex(1) == "1")
 					{
-						arenaPlayer!.AFK = true;
-
-						arenaPlayer.ArenaTag = $"{Localizer["k4.general.afk"]} |";
-
-						if (!Config.CompatibilitySettings.DisableClantags)
-						{
-							player.Clan = arenaPlayer.ArenaTag;
-							Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
-						}
-
-						player!.ChangeTeam(CsTeam.Spectator);
-
-						player.PrintToChat($" {Localizer["k4.general.prefix"]} {string.Format(Localizer["k4.chat.afk_enabled"], Config.CommandSettings.AFKCommands.FirstOrDefault("Missing"))}");
-						return HookResult.Stop;
+						return HookResult.Continue;
 					}
 					else if (arenaPlayer?.AFK == true && player.Team == CsTeam.Spectator && (info.ArgByIndex(1) == "2" || info.ArgByIndex(1) == "3"))
 					{
-						arenaPlayer!.AFK = false;
-
-						arenaPlayer.ArenaTag = $"{Localizer["k4.general.waiting"]} |";
-
-						if (!Config.CompatibilitySettings.DisableClantags)
-						{
-							arenaPlayer.Controller.Clan = arenaPlayer.ArenaTag;
-							Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
-						}
-
-						player.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_disabled"]}");
 						return HookResult.Continue;
 					}
 
