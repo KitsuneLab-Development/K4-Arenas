@@ -10,7 +10,7 @@ public class Arenas
 	private readonly Plugin Plugin;
 
 	//** ? Arenas */
-	public List<Arena> ArenaList { get; set; } = new List<Arena>();
+	public List<Arena> ArenaList { get; set; } = [];
 
 	public Arenas(Plugin plugin)
 	{
@@ -63,11 +63,11 @@ public class Arenas
 		if (arena.Spawns.Item1.Count < teamSize || arena.Spawns.Item2.Count < teamSize)
 			return false;
 
-		List<ArenaPlayer> team1Preview = notAFKrankedPlayers.Take(teamSize).ToList();
-		List<ArenaPlayer> team2Preview = notAFKrankedPlayers.Skip(teamSize).Take(teamSize).ToList();
+		List<ArenaPlayer> team1Preview = [.. notAFKrankedPlayers.Take(teamSize)];
+		List<ArenaPlayer> team2Preview = [.. notAFKrankedPlayers.Skip(teamSize).Take(teamSize)];
 
-		List<RoundType> preferencesTeam1 = team1Preview.SelectMany(player => player.RoundPreferences).Distinct().ToList();
-		List<RoundType> preferencesTeam2 = team2Preview.SelectMany(player => player.RoundPreferences).Distinct().ToList();
+		List<RoundType> preferencesTeam1 = [.. team1Preview.SelectMany(player => player.RoundPreferences).Distinct()];
+		List<RoundType> preferencesTeam2 = [.. team2Preview.SelectMany(player => player.RoundPreferences).Distinct()];
 
 		RoundType roundType = Plugin.GetCommonRoundType(preferencesTeam1, preferencesTeam2, true);
 
@@ -89,7 +89,7 @@ public class Arenas
 		while (n > 1)
 		{
 			n--;
-			int k = Plugin.rng.Next(n + 1);
+			int k = Random.Shared.Next(n + 1);
 			Arena value = ArenaList[k];
 			ArenaList[k] = ArenaList[n];
 			ArenaList[n] = value;

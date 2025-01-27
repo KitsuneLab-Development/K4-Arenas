@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -176,9 +177,12 @@ public class Arena
 						player.Controller.Respawn();
 				});
 
-				if (ArenaID != -1)
+				if (ArenaID != -1 && !player.Controller.IsBot)
 				{
-					player.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(opponents) ?? "Unknown", Localizer[RoundType.Name ?? "Missing"]]}");
+					if (Plugin.Config.CommandSettings.CenterAnnounceMode)
+						player.CenterMessage = Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart_html", ArenaID, Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing"));
+					else
+						player.Controller.PrintToChat($" {Localizer.ForPlayer(player.Controller, "k4.general.prefix")} {Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(player.Controller, opponents) ?? "Unknown", Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing"))}");
 				}
 
 				if (Plugin.gameRules?.WarmupPeriod == true)
@@ -268,7 +272,7 @@ public class Arena
 				{
 					if (ArenaID == -2)
 					{
-						Server.PrintToChatAll($"{Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.tie", Team1.First().Controller.PlayerName, Team2.First().Controller.PlayerName]}");
+						Plugin.PrintToChatAll("k4.general.challenge.tie", Team1.First().Controller.PlayerName, Team2.First().Controller.PlayerName);
 						Result = new ArenaResult(ArenaResultType.Tie, null, null);
 
 						Team1.Concat(Team2)
@@ -286,7 +290,7 @@ public class Arena
 						ArenaPlayer winner = (team1Alive > team2Alive ? Team1.First() : Team2.First())!;
 						ArenaPlayer loser = (team1Alive > team2Alive ? Team2.First() : Team1.First())!;
 
-						Server.PrintToChatAll($"{Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.winner", winner.Controller.PlayerName, loser.Controller.PlayerName]}");
+						Plugin.PrintToChatAll("k4.general.challenge.winner", winner.Controller.PlayerName, loser.Controller.PlayerName);
 						Result = new ArenaResult(ArenaResultType.Win, null, null);
 
 						Team1.Concat(Team2)

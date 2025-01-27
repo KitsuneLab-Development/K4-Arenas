@@ -5,13 +5,31 @@ namespace K4Arenas
 	using CounterStrikeSharp.API.Modules.Commands;
 	using CounterStrikeSharp.API.Modules.Utils;
 	using K4Arenas.Models;
-	using Microsoft.Extensions.Logging;
 
 	public sealed partial class Plugin : BasePlugin
 	{
 		public void Initialize_Listeners()
 		{
+			RegisterListener<Listeners.OnTick>(OnTick);
+
 			AddCommandListener("jointeam", ListenerJoinTeam);
+		}
+
+		private void OnTick()
+		{
+			var players = Utilities.GetPlayers().Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && !x.IsBot && !x.IsHLTV);
+
+			if (players.Any())
+			{
+				foreach (var player in players)
+				{
+					ArenaPlayer? arenaPlayer = Arenas?.FindPlayer(player);
+					if (arenaPlayer != null && !arenaPlayer.AFK && !string.IsNullOrEmpty(arenaPlayer.CenterMessage))
+					{
+						player.PrintToCenterHtml(arenaPlayer.CenterMessage);
+					}
+				}
+			}
 		}
 
 		public HookResult ListenerJoinTeam(CCSPlayerController? player, CommandInfo info)

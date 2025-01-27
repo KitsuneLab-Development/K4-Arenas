@@ -2,6 +2,7 @@ namespace K4Arenas
 {
 	using CounterStrikeSharp.API;
 	using CounterStrikeSharp.API.Core;
+	using CounterStrikeSharp.API.Core.Translations;
 	using CounterStrikeSharp.API.Modules.Cvars;
 	using CounterStrikeSharp.API.Modules.Timers;
 	using CounterStrikeSharp.API.Modules.Utils;
@@ -53,6 +54,24 @@ namespace K4Arenas
 				IsBetweenRounds = false;
 			});
 
+			RegisterEventHandler((EventRoundFreezeEnd @event, GameEventInfo info) =>
+			{
+				var players = Utilities.GetPlayers().Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && !x.IsBot && !x.IsHLTV);
+
+				if (players.Any())
+				{
+					foreach (var player in players)
+					{
+						ArenaPlayer? arenaPlayer = Arenas?.FindPlayer(player);
+						if (arenaPlayer != null)
+						{
+							arenaPlayer.CenterMessage = string.Empty;
+						}
+					}
+				}
+				return HookResult.Continue;
+			});
+
 			RegisterEventHandler((EventPlayerActivate @event, GameEventInfo info) =>
 			{
 				CCSPlayerController? playerController = @event.Userid;
@@ -82,19 +101,8 @@ namespace K4Arenas
 			RegisterEventHandler((EventPlayerDisconnect @event, GameEventInfo info) =>
 			{
 				CCSPlayerController? playerController = @event.Userid;
-
 				if (playerController is null || !playerController.IsValid)
 					return HookResult.Continue;
-
-				if (!playerController.IsBot && !playerController.IsHLTV)
-				{
-					ArenaPlayer? arenaPlayer = Arenas?.FindPlayer(playerController);
-
-					if (arenaPlayer is null || !arenaPlayer.Loaded)
-						return HookResult.Continue;
-
-					Task.Run(() => SavePlayerPreferencesAsync(new List<ArenaPlayer> { arenaPlayer }));
-				}
 
 				WaitingArenaPlayers = new Queue<ArenaPlayer>(WaitingArenaPlayers.Where(p => p.Controller != playerController));
 				Arenas?.ArenaList.ForEach(arena => arena.RemovePlayer(playerController));
@@ -228,7 +236,7 @@ namespace K4Arenas
 				MoveQueue(WaitingArenaPlayers, rankedPlayers);
 
 				var endedPlayers = Arenas.ArenaList
-					.SelectMany(a => (a.Team1 ?? []).Concat(a.Team2 ?? new List<ArenaPlayer>()))
+					.SelectMany(a => (a.Team1 ?? []).Concat(a.Team2 ?? []))
 					.Where(player => player.Challenge != null && (player.Challenge.IsEnded || !player.Challenge.IsAccepted))
 					.Distinct();
 
@@ -282,7 +290,7 @@ namespace K4Arenas
 				{
 					if (player.AFK)
 					{
-						player.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_reminder", Config.CommandSettings.AFKCommands.FirstOrDefault("Missing")]}");
+						player.Controller.PrintToChat($"{Localizer.ForPlayer(player.Controller, "k4.general.prefix")} {Localizer.ForPlayer(player.Controller, "k4.chat.afk_reminder", Config.CommandSettings.AFKCommands.FirstOrDefault("Missing"))}");
 
 						player.ArenaTag = $"{Localizer["k4.general.afk"]} |";
 
@@ -318,10 +326,10 @@ namespace K4Arenas
 						if (!player1IsAvailable || !player2IsAvailable)
 						{
 							if (challenge.Player1.IsValid)
-								challenge.Player1.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.cancelled"]}");
+								challenge.Player1.Controller.PrintToChat($"{Localizer.ForPlayer(challenge.Player1.Controller, "k4.general.prefix")} {Localizer.ForPlayer(challenge.Player1.Controller, "k4.general.challenge.cancelled")}");
 
 							if (challenge.Player2.IsValid)
-								challenge.Player2.Controller.PrintToChat($"{Localizer["k4.general.prefix"]} {Localizer["k4.general.challenge.cancelled"]}");
+								challenge.Player2.Controller.PrintToChat($"{Localizer.ForPlayer(challenge.Player2.Controller, "k4.general.prefix")} {Localizer.ForPlayer(challenge.Player2.Controller, "k4.general.challenge.cancelled")}");
 
 							continue;
 						}
@@ -454,7 +462,7 @@ namespace K4Arenas
 
 					player!.ChangeTeam(CsTeam.Spectator);
 
-					player.PrintToChat($" {Localizer["k4.general.prefix"]} {string.Format(Localizer["k4.chat.afk_enabled"], Config.CommandSettings.AFKCommands.FirstOrDefault("Missing"))}");
+					player.PrintToChat($" {Localizer.ForPlayer(player, "k4.general.prefix")} {string.Format(Localizer.ForPlayer(player, "k4.chat.afk_enabled"), Config.CommandSettings.AFKCommands.FirstOrDefault("Missing"))}");
 					return HookResult.Stop;
 				}
 				else if (arenaPlayer?.AFK == true && player.Team == CsTeam.Spectator && newTeam > CsTeam.Spectator)
@@ -469,7 +477,7 @@ namespace K4Arenas
 						Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
 					}
 
-					player.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.afk_disabled"]}");
+					player.PrintToChat($" {Localizer.ForPlayer(player, "k4.general.prefix")} {Localizer.ForPlayer(player, "k4.chat.afk_disabled")}");
 					return HookResult.Continue;
 				}
 

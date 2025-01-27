@@ -18,8 +18,8 @@ public class ArenaFinder
 	{
 		Plugin = plugin;
 
-		ctSpawns = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_counterterrorist").ToList();
-		tSpawns = Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_terrorist").ToList();
+		ctSpawns = [.. Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_counterterrorist")];
+		tSpawns = [.. Utilities.FindAllEntitiesByDesignerName<SpawnPoint>("info_player_terrorist")];
 
 		List<float> spawnTeamDistances = [];
 		List<float> spawnEnemyDistances = [];

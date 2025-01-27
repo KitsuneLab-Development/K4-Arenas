@@ -15,8 +15,8 @@ public enum WeaponType
 
 public struct WeaponModel
 {
-	public static List<CsItem> rifleItems = new List<CsItem>()
-	{
+	public static List<CsItem> rifleItems =
+	[
 		CsItem.AK47,
 		CsItem.M4A1S,
 		CsItem.M4A1,
@@ -24,26 +24,26 @@ public struct WeaponModel
 		CsItem.Famas,
 		CsItem.SG556,
 		CsItem.AUG,
-	};
+	];
 
-	public static List<CsItem> sniperItems = new List<CsItem>()
-	{
+	public static List<CsItem> sniperItems =
+	[
 		CsItem.AWP,
 		CsItem.SSG08,
 		CsItem.SCAR20,
 		CsItem.G3SG1,
-	};
+	];
 
-	public static List<CsItem> shotgunItems = new List<CsItem>()
-	{
+	public static List<CsItem> shotgunItems =
+	[
 		CsItem.XM1014,
 		CsItem.Nova,
 		CsItem.MAG7,
 		CsItem.SawedOff,
-	};
+	];
 
-	public static List<CsItem> smgItems = new List<CsItem>()
-	{
+	public static List<CsItem> smgItems =
+	[
 		CsItem.Mac10,
 		CsItem.MP9,
 		CsItem.MP7,
@@ -51,16 +51,16 @@ public struct WeaponModel
 		CsItem.MP5SD,
 		CsItem.Bizon,
 		CsItem.UMP45,
-	};
+	];
 
-	public static List<CsItem> lmgItems = new List<CsItem>()
-	{
+	public static List<CsItem> lmgItems =
+	[
 		CsItem.M249,
 		CsItem.Negev,
-	};
+	];
 
-	public static List<CsItem> pistolItems = new List<CsItem>()
-	{
+	public static List<CsItem> pistolItems =
+	[
 		CsItem.Deagle,
 		CsItem.Glock,
 		CsItem.USPS,
@@ -71,7 +71,7 @@ public struct WeaponModel
 		CsItem.CZ,
 		CsItem.FiveSeven,
 		CsItem.Revolver
-	};
+	];
 
 	public static List<CsItem> GetWeaponList(WeaponType type)
 	{
@@ -112,7 +112,7 @@ public struct WeaponModel
 	public static CsItem GetRandomWeapon(WeaponType type)
 	{
 		List<CsItem> possibleItems = GetWeaponList(type);
-		return possibleItems[Plugin.rng.Next(0, possibleItems.Count)];
+		return possibleItems[Random.Shared.Next(0, possibleItems.Count)];
 	}
 
 	public static WeaponType GetWeaponType(CsItem? weapon)

@@ -23,7 +23,7 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="KitsuneMenu">
-      <HintPath>/Users/sples/Projects/CS2_Random/Menu-main/src/bin/Release/net8.0/publish/KitsuneMenu.dll</HintPath>
+      <HintPath>/Users/sples/Projects/CS2_Random/Menu-main/src/bin/KitsuneMenu/shared/KitsuneMenu/KitsuneMenu.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <None Update="lang\**\*.*" CopyToOutputDirectory="PreserveNewest" />
@@ -31,6 +31,6 @@
   <Target Name="CopyCustomFilesToPublishDirectory" AfterTargets="Publish">
     <Copy SourceFiles="$(ProjectDir)readme.txt" DestinationFolder="$(PublishDir)\" />
     <Copy SourceFiles="$(ProjectDir)$(ReferencePath)../src-shared/K4-ArenaSharedApi.dll" DestinationFolder="$(PublishDir)../../shared/K4-ArenaSharedApi/" />
-    <Copy SourceFiles="/Users/sples/Projects/CS2_Random/Menu-main/src/bin/Release/net8.0/publish/KitsuneMenu.dll" DestinationFolder="$(PublishDir)../../shared/KitsuneMenu/" />
+    <Copy SourceFiles="/Users/sples/Projects/CS2_Random/Menu-main/src/bin/KitsuneMenu/shared/KitsuneMenu/KitsuneMenu.dll" DestinationFolder="$(PublishDir)../../shared/KitsuneMenu/" OverwriteReadOnlyFiles="true" SkipUnchangedFiles="false" />
   </Target>
 </Project>

@@ -35,7 +35,7 @@ namespace K4Arenas.Models
 		public static readonly RoundType ThreeVSThree = new RoundType("k4.rounds.3vs3", 3, null, null, true, WeaponType.Unknown, true);
 		public static readonly RoundType Knife = new RoundType("k4.rounds.knife", 1, null, null, false, null, false, false, false);
 
-		public static List<RoundType> RoundTypes { get; } = new List<RoundType>();
+		public static List<RoundType> RoundTypes { get; } = [];
 
 		public static void AddRoundType(RoundTypeReader roundType)
 		{

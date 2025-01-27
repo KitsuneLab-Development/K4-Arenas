@@ -1,6 +1,12 @@
--- 2025.01.27 - 1.5.5
+-- 2025.01.28 - 1.5.5
 
-- feat: The plugin now detect team changes from Anti-AFK or 3rd party plugins to perform arena AFK
+- feat: Added detection for team changes from Anti-AFK and third-party plugins to handle arena AFK state
+- feat: Implemented default "Preferred" SSLMode fallback for invalid database configurations
+- feat: Player-specific translations now respect individual language settings (changeable via !lang command)
+- feat: Introduced HTML-based round announcements in screen center during freeze time
+- upgrade: Refactored menu system for improved preference handling and display
+- optimise: Streamlined codebase with simplified logic patterns
+- remove: Discontinued support for MetaMod skinchanger compatibility
 
 -- 2024.12.20 - 1.5.4
 

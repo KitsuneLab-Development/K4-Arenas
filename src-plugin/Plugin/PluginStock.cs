@@ -12,6 +12,7 @@ namespace K4Arenas
 	using System.Runtime.Serialization;
 	using CounterStrikeSharp.API.Modules.Cvars;
 	using Microsoft.Extensions.Logging;
+	using CounterStrikeSharp.API.Core.Translations;
 
 	public sealed partial class Plugin : BasePlugin
 	{
@@ -34,9 +35,7 @@ namespace K4Arenas
 			if (gameRules.WarmupPeriod == true || Arenas == null)
 				return;
 
-			List<CCSPlayerController> players = Utilities.GetPlayers()
-					.Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && !x.IsHLTV && x.Connected == PlayerConnectedState.PlayerConnected)
-					.ToList();
+			List<CCSPlayerController> players = [.. Utilities.GetPlayers().Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && !x.IsHLTV && x.Connected == PlayerConnectedState.PlayerConnected)];
 
 			if (!players.Any(p => !p.IsBot))
 				return;
@@ -45,7 +44,7 @@ namespace K4Arenas
 			{
 				IsBetweenRounds = true;
 
-				List<CCSPlayerController> alivePlayers = players.Where(x => x.PlayerPawn.Value?.Health > 0).ToList();
+				List<CCSPlayerController> alivePlayers = [.. players.Where(x => x.PlayerPawn.Value?.Health > 0)];
 
 				int tCount = alivePlayers.Count(x => x.Team == CsTeam.Terrorist);
 				int ctCount = alivePlayers.Count(x => x.Team == CsTeam.CounterTerrorist);
@@ -89,12 +88,12 @@ namespace K4Arenas
 
 				if (!arenaPlayer.Controller.IsBot)
 				{
-					arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.queue_added", WaitingArenaPlayers.Count]}");
-					arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_afk", Config.CommandSettings.AFKCommands.FirstOrDefault() ?? "Missing"]}");
+					arenaPlayer.Controller.PrintToChat($" {Localizer.ForPlayer(playerController, "k4.general.prefix")} {Localizer.ForPlayer(playerController, "k4.chat.queue_added", WaitingArenaPlayers.Count)}");
+					arenaPlayer.Controller.PrintToChat($" {Localizer.ForPlayer(playerController, "k4.general.prefix")} {Localizer.ForPlayer(playerController, "k4.chat.arena_afk", Config.CommandSettings.AFKCommands.FirstOrDefault() ?? "Missing")}");
 
 					if (HasDatabase)
 					{
-						arenaPlayer.Controller.PrintToChat($" {Localizer["k4.general.prefix"]} {Localizer["k4.chat.arena_commands", Config.CommandSettings.GunsCommands.FirstOrDefault() ?? "Missing", Config.CommandSettings.RoundsCommands.FirstOrDefault() ?? "Missing"]}");
+						arenaPlayer.Controller.PrintToChat($" {Localizer.ForPlayer(playerController, "k4.general.prefix")} {Localizer.ForPlayer(playerController, "k4.chat.arena_commands", Config.CommandSettings.GunsCommands.FirstOrDefault() ?? "Missing", Config.CommandSettings.RoundsCommands.FirstOrDefault() ?? "Missing")}");
 
 						ulong steamID = playerController.SteamID;
 						Task.Run(async () =>
@@ -137,14 +136,14 @@ namespace K4Arenas
 				case CommandUsage.CLIENT_ONLY:
 					if (player == null || !player.IsValid || player.PlayerPawn.Value == null)
 					{
-						info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.commandclientonly"]}");
+						info.ReplyToCommand($" {Localizer.ForPlayer(player, "k4.general.prefix")} {Localizer.ForPlayer(player, "k4.general.commandclientonly")}");
 						return false;
 					}
 					break;
 				case CommandUsage.SERVER_ONLY:
 					if (player != null)
 					{
-						info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.commandserveronly"]}");
+						info.ReplyToCommand($" {Localizer.ForPlayer(player, "k4.general.prefix")} {Localizer.ForPlayer(player, "k4.general.commandserveronly")}");
 						return false;
 					}
 					break;
@@ -158,7 +157,7 @@ namespace K4Arenas
 			{
 				if (player != null && !AdminManager.PlayerHasPermissions(player, permission))
 				{
-					info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.commandnoperm"]}");
+					info.ReplyToCommand($" {Localizer.ForPlayer(player, "k4.general.prefix")} {Localizer.ForPlayer(player, "k4.general.commandnoperm")}");
 					return false;
 				}
 			}
@@ -168,7 +167,7 @@ namespace K4Arenas
 				int checkArgCount = argCount + 1;
 				if (info.ArgCount < checkArgCount)
 				{
-					info.ReplyToCommand($" {Localizer["k4.general.prefix"]} {Localizer["k4.general.commandhelp", info.ArgByIndex(0).Replace("css_", string.Empty), help]}");
+					info.ReplyToCommand($" {Localizer.ForPlayer(player, "k4.general.prefix")} {Localizer.ForPlayer(player, "k4.general.commandhelp", info.ArgByIndex(0).Replace("css_", string.Empty), help)}");
 					return false;
 				}
 			}
@@ -176,7 +175,7 @@ namespace K4Arenas
 			return true;
 		}
 
-		public void CheckCommonProblems()
+		public static void CheckCommonProblems()
 		{
 			// Common things that fuck up the gameplay
 			Server.ExecuteCommand("mp_join_grace_time 0");
@@ -190,17 +189,17 @@ namespace K4Arenas
 			Server.ExecuteCommand("mp_free_armor 0");
 		}
 
-		public RoundType GetCommonRoundType(List<RoundType>? roundPreferences1, List<RoundType>? roundPreferences2, bool multi)
+		public static RoundType GetCommonRoundType(List<RoundType>? roundPreferences1, List<RoundType>? roundPreferences2, bool multi)
 		{
-			List<RoundType> commonRounds = roundPreferences1?.Intersect(roundPreferences2 ?? roundPreferences1)?.ToList() ?? new List<RoundType>();
-			List<RoundType> commonUsableRounds = multi ? commonRounds : commonRounds.Where(rt => rt.TeamSize < 2).ToList();
+			List<RoundType> commonRounds = roundPreferences1?.Intersect(roundPreferences2 ?? roundPreferences1)?.ToList() ?? [];
+			List<RoundType> commonUsableRounds = multi ? commonRounds : [.. commonRounds.Where(rt => rt.TeamSize < 2)];
 
-			if (commonUsableRounds.Any())
+			if (commonUsableRounds.Count != 0)
 			{
 				return commonUsableRounds[Random.Shared.Next(0, commonUsableRounds.Count)];
 			}
 
-			List<RoundType> availableRoundTypes = RoundType.RoundTypes.Where(rt => rt.TeamSize < 2).ToList();
+			List<RoundType> availableRoundTypes = [.. RoundType.RoundTypes.Where(rt => rt.TeamSize < 2)];
 			return availableRoundTypes[Random.Shared.Next(0, availableRoundTypes.Count)];
 		}
 
@@ -213,7 +212,7 @@ namespace K4Arenas
 			}
 		}
 
-		public void EnqueueTeamPlayers(List<ArenaPlayer>? team, Queue<ArenaPlayer> queue)
+		public static void EnqueueTeamPlayers(List<ArenaPlayer>? team, Queue<ArenaPlayer> queue)
 		{
 			if (team is null)
 				return;
@@ -227,10 +226,10 @@ namespace K4Arenas
 			}
 		}
 
-		public string GetOpponentNames(List<ArenaPlayer>? opponents)
+		public string GetOpponentNames(CCSPlayerController player, List<ArenaPlayer>? opponents)
 		{
 			if (opponents is null || opponents.Count == 0)
-				return Localizer["k4.general.no_opponent"];
+				return Localizer.ForPlayer(player, "k4.general.no_opponent");
 
 
 			return string.Join(", ", opponents.Where(p => p.IsValid).Select(p => p.Controller.PlayerName));
@@ -277,11 +276,24 @@ namespace K4Arenas
 			};
 
 		public string GetRequiredArenaName(int arenaID) =>
-		arenaID switch
+			arenaID switch
+			{
+				-2 => Localizer["k4.general.challenge"],
+				-1 => Localizer["k4.general.warmup"],
+				_ => $"{arenaID}"
+			};
+
+		public void PrintToChatAll(string key, params object[] args)
 		{
-			-2 => Localizer["k4.general.challenge"],
-			-1 => Localizer["k4.general.warmup"],
-			_ => $"{arenaID}"
-		};
+			var players = Utilities.GetPlayers().Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && !x.IsBot && !x.IsHLTV);
+
+			if (players.Any())
+			{
+				foreach (var player in players)
+				{
+					player.PrintToChat($" {Localizer.ForPlayer(player, "k4.general.prefix")} {Localizer.ForPlayer(player, key, args)}");
+				}
+			}
+		}
 	}
 }
