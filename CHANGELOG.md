@@ -1,3 +1,24 @@
+-- 2025.02.04 - 2.0.0
+
+- feat: Added automated challenge systems for bots
+- feat: Enhanced challenge notifications in screen center
+- feat: Added warmup status indicators
+- feat: Implemented bot arena match handling
+- feat: Added support for CYBERSHOKE maps
+- upgrade: New smart arena detection system
+- upgrade: Rebuilt duel mechanics from ground up
+- optimise: Reduced round end processing overhead
+- optimise: Better warmup player handling
+- optimise: Smarter warmup population timing
+- optimise: Code cleanup for better performance
+- fix: Map transition round timing issues
+- fix: Player preferences persistence
+- fix: Challenge position assignments
+- fix: Challenge end state handling
+- fix: Spawn conflicts with zero warmup
+- fix: Random team switch problems
+- fix: Multiple arena allocation fixes
+
 -- 2025.01.28 - 1.5.5
 
 - feat: Added detection for team changes from Anti-AFK and third-party plugins to handle arena AFK state

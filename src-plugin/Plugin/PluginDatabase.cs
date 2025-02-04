@@ -22,7 +22,7 @@ public sealed partial class Plugin : BasePlugin
 			Password = _settings.Password,
 			Database = _settings.Database,
 			Port = (uint)_settings.Port,
-			SslMode = Enum.TryParse<MySqlSslMode>(_settings.Sslmode, true, out MySqlSslMode sslMode) ? sslMode : MySqlSslMode.Preferred,
+			SslMode = Enum.TryParse(_settings.Sslmode, true, out MySqlSslMode sslMode) ? sslMode : MySqlSslMode.Preferred,
 		};
 
 		return new MySqlConnection(builder.ToString());

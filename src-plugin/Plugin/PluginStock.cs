@@ -21,13 +21,9 @@ namespace K4Arenas
 			if (IsBetweenRounds || gameRules == null)
 				return;
 
-			if (gameRules.WarmupPeriodEnd <= Server.CurrentTime && gameRules.WarmupPeriod == true)
+			if (FlashFixFound && gameRules.WarmupPeriodEnd <= Server.CurrentTime && gameRules.WarmupPeriod == true)
 			{
 				IsBetweenRounds = true;
-
-				Arenas?.Clear();
-				Arenas = new Arenas(this);
-
 				Server.NextWorldUpdate(() => Server.ExecuteCommand("mp_warmup_end; mp_restartgame 1"));
 				return;
 			}
@@ -67,11 +63,8 @@ namespace K4Arenas
 
 		public ArenaPlayer? SetupPlayer(CCSPlayerController playerController)
 		{
-			if (playerController == null || !playerController.IsValid)
-			{
-				Logger.LogWarning("Attempted to setup null or invalid player");
+			if (playerController == null || Arenas is null || Arenas.Count < 0 || Arenas.FindPlayer(playerController) != null)
 				return null;
-			}
 
 			try
 			{
@@ -205,13 +198,17 @@ namespace K4Arenas
 
 		public static void MoveQueue<T>(Queue<T> from, Queue<T> to)
 		{
+			var seen = new HashSet<T>();
 			while (from.Count > 0)
 			{
 				T item = from.Dequeue();
-				to.Enqueue(item);
+				if (!seen.Contains(item) && !to.Contains(item))
+				{
+					seen.Add(item);
+					to.Enqueue(item);
+				}
 			}
 		}
-
 		public static void EnqueueTeamPlayers(List<ArenaPlayer>? team, Queue<ArenaPlayer> queue)
 		{
 			if (team is null)
@@ -219,7 +216,7 @@ namespace K4Arenas
 
 			foreach (ArenaPlayer player in team)
 			{
-				if (player?.IsValid == true)
+				if (player?.IsValid == true && !queue.Contains(player))
 				{
 					queue.Enqueue(player);
 				}
@@ -230,7 +227,6 @@ namespace K4Arenas
 		{
 			if (opponents is null || opponents.Count == 0)
 				return Localizer.ForPlayer(player, "k4.general.no_opponent");
-
 
 			return string.Join(", ", opponents.Where(p => p.IsValid).Select(p => p.Controller.PlayerName));
 		}
@@ -293,6 +289,25 @@ namespace K4Arenas
 				{
 					player.PrintToChat($" {Localizer.ForPlayer(player, "k4.general.prefix")} {Localizer.ForPlayer(player, key, args)}");
 				}
+			}
+		}
+
+		public ChallengeModel? FindChallengeForPlayer(CCSPlayerController player)
+		{
+			return Challenges.FirstOrDefault(c => c.Player1.Controller == player || c.Player2.Controller == player);
+		}
+
+		public void MoveBackChallengePlayer(ArenaPlayer player, int placement, ref Queue<ArenaPlayer> queue)
+		{
+			if (placement > queue.Count)
+			{
+				queue.Enqueue(player);
+			}
+			else
+			{
+				var list = queue.ToList();
+				list.Insert(Math.Max(0, placement - 1), player);
+				queue = new Queue<ArenaPlayer>(list);
 			}
 		}
 	}

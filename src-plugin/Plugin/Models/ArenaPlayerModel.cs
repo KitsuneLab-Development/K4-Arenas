@@ -22,7 +22,6 @@ public class ArenaPlayer
 
 	//** ? Player */
 	public readonly CCSPlayerController Controller;
-	public ChallengeModel? Challenge = null;
 	public readonly ulong SteamID;
 	public SpawnPoint? SpawnPoint;
 	public bool PlayerIsSafe;
@@ -53,14 +52,14 @@ public class ArenaPlayer
 
 		Controller = playerController;
 		SteamID = playerController.SteamID;
-		PlayerIsSafe = false;
+		PlayerIsSafe = playerController.IsBot;
 	}
 
 	public bool IsValid
-		=> Controller?.IsValid == true && Controller.PlayerPawn?.IsValid == true && Controller.Connected == PlayerConnectedState.PlayerConnected;
+		=> Controller?.IsValid == true && Controller.PlayerPawn?.IsValid == true;
 
 	public bool IsAlive
-		=> Controller.PlayerPawn?.Value?.Health > 0;
+		=> Controller.PlayerPawn.Value?.Health > 0;
 
 	public void SetupWeapons(RoundType roundType)
 	{

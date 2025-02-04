@@ -66,8 +66,8 @@ namespace K4Arenas.Models
 		public static void ResetRoundTypes()
 		{
 			RoundTypes.Clear();
-			RoundTypes.AddRange(new List<RoundType>
-			{
+			RoundTypes.AddRange(
+			[
 				Rifle,
 				Sniper,
 				Shotgun,
@@ -80,7 +80,7 @@ namespace K4Arenas.Models
 				Knife,
 				TwoVSTwo,
 				ThreeVSThree
-			});
+			]);
 		}
 
 		public static CsItem? FindEnumValueByEnumMemberValue(string? search)

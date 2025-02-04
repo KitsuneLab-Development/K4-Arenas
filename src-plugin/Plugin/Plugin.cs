@@ -47,10 +47,12 @@
         }
 
         public Queue<ArenaPlayer> WaitingArenaPlayers { get; set; } = new Queue<ArenaPlayer>();
+        public List<ChallengeModel> Challenges { get; set; } = [];
         public Arenas? Arenas { get; set; } = null;
 
         public CCSGameRules? gameRules = null;
         public Timer? WarmupTimer { get; set; } = null;
+        public bool FlashFixFound { get; set; } = false;
 
         public override void Load(bool hotReload)
         {
@@ -58,6 +60,7 @@
                 GameConfig = new GameConfig(this);
 
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ModulePath);
+            FlashFixFound = Directory.Exists(Path.Combine(ModulePath, "..", "FlashingXMLHintFix"));
 
             if (!IsDatabaseConfigDefault(Config))
             {
@@ -84,17 +87,17 @@
 
             if (hotReload)
             {
+                var players = Utilities.GetPlayers().Where(p => p.IsValid == true && p.PlayerPawn?.IsValid == true && !p.IsHLTV).ToList();
+                lastRealPlayers = players.Count(p => !p.IsBot);
+
                 Arenas ??= new Arenas(this);
 
                 gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
-                Utilities.GetPlayers()
-                    .Where(p => p.IsValid == true && p.PlayerPawn?.IsValid == true && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected)
-                    .ToList()
-                    .ForEach(p =>
-                    {
-                        SetupPlayer(p);
-                    });
+                players.ForEach(p =>
+                {
+                    SetupPlayer(p);
+                });
 
                 GameConfig?.Apply();
 

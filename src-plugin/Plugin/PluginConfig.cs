@@ -127,11 +127,8 @@ namespace K4Arenas
 		[JsonPropertyName("default-weapon-settings")]
 		public DefaultWeaponSettings DefaultWeaponSettings { get; set; } = new DefaultWeaponSettings();
 
-		[JsonPropertyName("arena-math-overrides")]
-		public int ArenaMathOverrides { get; set; } = 0;
-
 		[JsonPropertyName("ConfigVersion")]
-		public override int Version { get; set; } = 6;
+		public override int Version { get; set; } = 7;
 	}
 
 	public sealed class CompatibilitySettings

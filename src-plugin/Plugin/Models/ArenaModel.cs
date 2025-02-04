@@ -31,11 +31,8 @@ public class Arena
 		Localizer = Plugin.Localizer;
 	}
 
-	public bool IsActive
-		=> Team1?.Any(p => p.IsValid) == true && Team2?.Any(p => p.IsValid) == true;
-
 	public bool HasFinished
-		=> !IsActive || Team1?.Any(p => p.IsValid && p.IsAlive) == false || Team2?.Any(p => p.IsValid && p.IsAlive) == false;
+		=> Team1?.All(p => p.IsValid && !p.IsAlive) == true || Team2?.All(p => p.IsValid && !p.IsAlive) == true;
 
 	public bool HasRealPlayers
 		=> Team1?.Any(p => p.IsValid && !p.Controller.IsBot) == true || Team2?.Any(p => p.IsValid && !p.Controller.IsBot) == true;
@@ -49,6 +46,9 @@ public class Arena
 		ArenaScore = 0;
 
 		var (t1Spawns, t2Spawns) = Random.Shared.Next(0, 2) == 1 ? (Spawns.Item1, Spawns.Item2) : (Spawns.Item2, Spawns.Item1);
+
+		string team1Names = Team1?.Select(p => p.Controller.PlayerName).DefaultIfEmpty("none").Aggregate((a, b) => $"{a}, {b}") ?? "null";
+		string team2Names = Team2?.Select(p => p.Controller.PlayerName).DefaultIfEmpty("none").Aggregate((a, b) => $"{a}, {b}") ?? "null";
 
 		SetPlayerDetails(Team1, t1Spawns, CsTeam.Terrorist, Team2);
 		SetPlayerDetails(Team2, t2Spawns, CsTeam.CounterTerrorist, Team1);
@@ -68,6 +68,9 @@ public class Arena
 
 		var (t1Spawns, t2Spawns) = Random.Shared.Next(0, 2) == 1 ? (Spawns.Item1, Spawns.Item2) : (Spawns.Item2, Spawns.Item1);
 
+		string team1Names = Team1?.Select(p => p.Controller.PlayerName).DefaultIfEmpty("none").Aggregate((a, b) => $"{a}, {b}") ?? "null";
+		string team2Names = Team2?.Select(p => p.Controller.PlayerName).DefaultIfEmpty("none").Aggregate((a, b) => $"{a}, {b}") ?? "null";
+
 		SetPlayerDetails(Team1, t1Spawns, CsTeam.Terrorist, Team2);
 		SetPlayerDetails(Team2, t2Spawns, CsTeam.CounterTerrorist, Team1);
 	}
@@ -78,7 +81,7 @@ public class Arena
 
 		Queue<ArenaPlayer> availablePlayers = new Queue<ArenaPlayer>(Plugin.WaitingArenaPlayers.Where(p => p.IsValid && !p.AFK && p.PlayerIsSafe));
 
-		if (availablePlayers.Count == 0)
+		if (availablePlayers.Count == 0 || (Team1?.Count > 0 && Team2?.Count > 0))
 			return;
 
 		ArenaID = -1;
@@ -173,15 +176,15 @@ public class Arena
 
 				Plugin.AddTimer(1.0f, () =>
 				{
-					if (player.IsValid && player.Controller.PlayerPawn.Value?.LifeState != (byte)LifeState_t.LIFE_ALIVE && player.Controller.Team > CsTeam.Spectator && !player.AFK)
+					if (player.IsValid && !player.IsAlive && player.Controller.Team > CsTeam.Spectator && !player.AFK)
 						player.Controller.Respawn();
 				});
 
-				if (ArenaID != -1 && !player.Controller.IsBot)
+				if (!player.Controller.IsBot)
 				{
 					if (Plugin.Config.CommandSettings.CenterAnnounceMode)
-						player.CenterMessage = Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart_html", ArenaID, Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing"));
-					else
+						player.CenterMessage = Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart_html", Plugin.GetRequiredArenaName(ArenaID), ArenaID == -1 ? Localizer.ForPlayer(player.Controller, "k4.general.random") : Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing"), Plugin.GetOpponentNames(player.Controller, opponents) ?? "Unknown");
+					else if (ArenaID != -1)
 						player.Controller.PrintToChat($" {Localizer.ForPlayer(player.Controller, "k4.general.prefix")} {Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(player.Controller, opponents) ?? "Unknown", Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing"))}");
 				}
 
@@ -265,56 +268,50 @@ public class Arena
 			}
 			else
 			{
-				int team1Alive = Team1.Count(p => p.IsValid && p.Controller.PlayerPawn?.Value?.Health > 0);
-				int team2Alive = Team2.Count(p => p.IsValid && p.Controller.PlayerPawn?.Value?.Health > 0);
+				int team1Alive = Team1.Count(p => p.IsValid && p.IsAlive);
+				int team2Alive = Team2.Count(p => p.IsValid && p.IsAlive);
 
 				if (team1Alive == team2Alive)
 				{
 					if (ArenaID == -2)
 					{
 						Plugin.PrintToChatAll("k4.general.challenge.tie", Team1.First().Controller.PlayerName, Team2.First().Controller.PlayerName);
-						Result = new ArenaResult(ArenaResultType.Tie, null, null);
 
-						Team1.Concat(Team2)
-							.Where(p => p.Challenge is not null)
-							.ToList()
-							.ForEach(p => p.Challenge!.IsEnded = true);
+						Team1.Concat(Team2).ToList().ForEach(p =>
+						{
+							var challenge = Plugin.FindChallengeForPlayer(p.Controller);
+							if (challenge != null)
+								challenge.IsEnded = true;
+						});
 					}
-					else
-						Result = new ArenaResult(ArenaResultType.Tie, Team1, Team2);
+
+					Result = new ArenaResult(ArenaResultType.Tie, Team1, Team2);
 				}
 				else
 				{
+					List<ArenaPlayer> winners = (team1Alive > team2Alive ? Team1 : Team2)!;
+					List<ArenaPlayer> losers = (team1Alive > team2Alive ? Team2 : Team1)!;
+
+					winners.ForEach(p =>
+					{
+						p.MVPs++;
+						p.Controller.MVPs = p.MVPs;
+						Utilities.SetStateChanged(p.Controller, "CCSPlayerController", "m_iMVPs");
+					});
+
 					if (ArenaID == -2)
 					{
-						ArenaPlayer winner = (team1Alive > team2Alive ? Team1.First() : Team2.First())!;
-						ArenaPlayer loser = (team1Alive > team2Alive ? Team2.First() : Team1.First())!;
+						Plugin.PrintToChatAll("k4.general.challenge.winner", winners[0].Controller.PlayerName, losers[0].Controller.PlayerName);
 
-						Plugin.PrintToChatAll("k4.general.challenge.winner", winner.Controller.PlayerName, loser.Controller.PlayerName);
-						Result = new ArenaResult(ArenaResultType.Win, null, null);
-
-						Team1.Concat(Team2)
-							.Where(p => p.Challenge is not null)
-							.ToList()
-							.ForEach(p => p.Challenge!.IsEnded = true);
-					}
-					else
-					{
-						List<ArenaPlayer> winners = (team1Alive > team2Alive ? Team1 : Team2)!;
-						List<ArenaPlayer> losers = (team1Alive > team2Alive ? Team2 : Team1)!;
-
-						if (ArenaID == 1)
+						Team1.Concat(Team2).ToList().ForEach(p =>
 						{
-							winners.ForEach(p =>
-							{
-								p.MVPs++;
-								p.Controller.MVPs = p.MVPs;
-								Utilities.SetStateChanged(p.Controller, "CCSPlayerController", "m_iMVPs");
-							});
-						}
-
-						Result = new ArenaResult(ArenaResultType.Win, winners, losers);
+							var challenge = Plugin.FindChallengeForPlayer(p.Controller);
+							if (challenge != null)
+								challenge.IsEnded = true;
+						});
 					}
+
+					Result = new ArenaResult(ArenaResultType.Win, winners, losers);
 				}
 			}
 

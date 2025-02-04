@@ -2,7 +2,6 @@
 using CounterStrikeSharp.API.Core;
 using K4Arenas;
 using K4Arenas.Models;
-using Microsoft.Extensions.Logging;
 
 public class Arenas
 {
@@ -18,15 +17,13 @@ public class Arenas
 
 		Plugin.CheckCommonProblems();
 
-		List<Tuple<List<SpawnPoint>, List<SpawnPoint>>> spawnPairs = new ArenaFinder(this.Plugin).GetSpawnPairs();
+		List<Tuple<List<SpawnPoint>, List<SpawnPoint>>> spawnPairs = new ArenaFinder(this.Plugin).GetArenaPairs();
 
 		foreach (Tuple<List<SpawnPoint>, List<SpawnPoint>> spawnPair in spawnPairs)
 		{
 			Arena arena = new Arena(Plugin, spawnPair);
 			ArenaList.Add(arena);
 		}
-
-		Plugin.Logger.LogInformation("Successfully setup {0} arenas!", ArenaList.Count);
 	}
 
 	public int Count => ArenaList.Count;
@@ -47,11 +44,6 @@ public class Arenas
 			.Concat(ArenaList.SelectMany(x => x.Team2 ?? Enumerable.Empty<ArenaPlayer>()));
 
 		return allPlayers.FirstOrDefault(p => p.SteamID == steamId);
-	}
-
-	public bool IsPlayerInArena(CCSPlayerController player)
-	{
-		return ArenaList.Any(a => a.Team1?.Any(p => p.Controller == player) == true || a.Team2?.Any(p => p.Controller == player) == true);
 	}
 
 	public bool AddTeamsToArena(int arenaID, int displayID, int teamSize, Queue<ArenaPlayer> notAFKrankedPlayers, RoundType checkType)
