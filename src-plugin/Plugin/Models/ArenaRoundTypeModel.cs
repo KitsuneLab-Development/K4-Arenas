@@ -22,18 +22,18 @@ namespace K4Arenas.Models
 		public readonly bool EnabledByDefault = enabledByDefaultAction;
 		public readonly Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? StartFunction = startFunction;
 		public readonly Action<List<CCSPlayerController>?, List<CCSPlayerController>?>? EndFunction = endFunction;
-		public static readonly RoundType Rifle = new RoundType("k4.rounds.rifle", 1, null, null, true, WeaponType.Rifle, true);
-		public static readonly RoundType Sniper = new RoundType("k4.rounds.sniper", 1, null, null, true, WeaponType.Sniper, true);
-		public static readonly RoundType Shotgun = new RoundType("k4.rounds.shotgun", 1, null, null, true, WeaponType.Shotgun, true);
-		public static readonly RoundType Pistol = new RoundType("k4.rounds.pistol", 1, null, null, false, null, true);
-		public static readonly RoundType Scout = new RoundType("k4.rounds.scout", 1, CsItem.Scout, null, false, null, true);
-		public static readonly RoundType AWP = new RoundType("k4.rounds.awp", 1, CsItem.AWP, null, false, null, true);
-		public static readonly RoundType Deagle = new RoundType("k4.rounds.deagle", 1, null, CsItem.Deagle, false, null, false);
-		public static readonly RoundType SMG = new RoundType("k4.rounds.smg", 1, null, null, true, WeaponType.SMG, true);
-		public static readonly RoundType LMG = new RoundType("k4.rounds.lmg", 1, null, null, true, WeaponType.LMG, true);
-		public static readonly RoundType TwoVSTwo = new RoundType("k4.rounds.2vs2", 2, null, null, true, WeaponType.Unknown, true);
-		public static readonly RoundType ThreeVSThree = new RoundType("k4.rounds.3vs3", 3, null, null, true, WeaponType.Unknown, true);
-		public static readonly RoundType Knife = new RoundType("k4.rounds.knife", 1, null, null, false, null, false, false, false);
+		public static readonly RoundType Rifle = new("k4.rounds.rifle", 1, null, null, true, WeaponType.Rifle, true);
+		public static readonly RoundType Sniper = new("k4.rounds.sniper", 1, null, null, true, WeaponType.Sniper, true);
+		public static readonly RoundType Shotgun = new("k4.rounds.shotgun", 1, null, null, true, WeaponType.Shotgun, true);
+		public static readonly RoundType Pistol = new("k4.rounds.pistol", 1, null, null, false, null, true);
+		public static readonly RoundType Scout = new("k4.rounds.scout", 1, CsItem.Scout, null, false, null, true);
+		public static readonly RoundType AWP = new("k4.rounds.awp", 1, CsItem.AWP, null, false, null, true);
+		public static readonly RoundType Deagle = new("k4.rounds.deagle", 1, null, CsItem.Deagle, false, null, false);
+		public static readonly RoundType SMG = new("k4.rounds.smg", 1, null, null, true, WeaponType.SMG, true);
+		public static readonly RoundType LMG = new("k4.rounds.lmg", 1, null, null, true, WeaponType.LMG, true);
+		public static readonly RoundType TwoVSTwo = new("k4.rounds.2vs2", 2, null, null, true, WeaponType.Unknown, true);
+		public static readonly RoundType ThreeVSThree = new("k4.rounds.3vs3", 3, null, null, true, WeaponType.Unknown, true);
+		public static readonly RoundType Knife = new("k4.rounds.knife", 1, null, null, false, null, false, false, false);
 
 		public static List<RoundType> RoundTypes { get; } = [];
 
@@ -47,7 +47,7 @@ namespace K4Arenas.Models
 
 		public static int AddSpecialRoundType(string name, int teamSize, bool enabledByDefault, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> startFunction, Action<List<CCSPlayerController>?, List<CCSPlayerController>?> endFunction)
 		{
-			RoundType specialRound = new RoundType(name, teamSize, null, null, false, null, false, false, false, enabledByDefault, startFunction, endFunction);
+			RoundType specialRound = new(name, teamSize, null, null, false, null, false, false, false, enabledByDefault, startFunction, endFunction);
 			RoundTypes.Add(specialRound);
 			return specialRound.ID;
 		}

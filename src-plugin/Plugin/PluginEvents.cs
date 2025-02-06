@@ -7,7 +7,6 @@ namespace K4Arenas
 	using CounterStrikeSharp.API.Modules.Timers;
 	using CounterStrikeSharp.API.Modules.Utils;
 	using K4Arenas.Models;
-	using Microsoft.Extensions.Logging;
 
 	public sealed partial class Plugin : BasePlugin
 	{
@@ -27,6 +26,12 @@ namespace K4Arenas
 					CheckCommonProblems();
 
 					gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
+
+					foreach (CCSPlayerController player in Utilities.GetPlayers().Where(x => x?.IsValid == true && !x.IsHLTV && x.Connected == PlayerConnectedState.PlayerConnected && !x.IsBot))
+					{
+						if (Arenas.FindPlayer(player) == null)
+							SetupPlayer(player);
+					}
 
 					AddTimer(3, () => // ! Fixes issues with the 3 sec warmup countdown when warmuptime is 0
 					{
@@ -151,7 +156,6 @@ namespace K4Arenas
 				if (!Config.CompatibilitySettings.BlockDamageOfNotOpponent)
 					return HookResult.Continue;
 
-
 				ArenaPlayer? attacker = Arenas?.FindPlayer(@event.Attacker);
 				ArenaPlayer? target = Arenas?.FindPlayer(@event.Userid);
 
@@ -178,7 +182,7 @@ namespace K4Arenas
 
 			RegisterEventHandler((EventRoundPrestart @event, GameEventInfo info) =>
 			{
-				if (gameRules == null || gameRules.WarmupPeriod || lastRealPlayers == 0 || Arenas == null)
+				if (gameRules == null || gameRules.WarmupPeriod || Arenas == null)
 					return HookResult.Continue;
 
 				Queue<ArenaPlayer> arenaWinners = new();

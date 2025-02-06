@@ -128,7 +128,7 @@ namespace K4Arenas
 		public DefaultWeaponSettings DefaultWeaponSettings { get; set; } = new DefaultWeaponSettings();
 
 		[JsonPropertyName("ConfigVersion")]
-		public override int Version { get; set; } = 7;
+		public override int Version { get; set; } = 8;
 	}
 
 	public sealed class CompatibilitySettings
@@ -231,6 +231,9 @@ namespace K4Arenas
 
 		[JsonPropertyName("default-pistol")]
 		public string? DefaultPistol { get; set; } = null;
+
+		[JsonPropertyName("default-round")]
+		public string? DefaultRound { get; set; } = "k4.rounds.rifle";
 	}
 
 	public sealed class DatabaseSettings

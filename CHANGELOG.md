@@ -1,3 +1,8 @@
+-- 2025.02.06 - 2.0.1
+
+- feat: Introduced configurable default round type for scenarios where players have no matching round preferences
+- fix: Resolved queue assignment issues when warmup_enabled convars was disabled
+
 -- 2025.02.04 - 2.0.0
 
 - feat: Added automated challenge systems for bots

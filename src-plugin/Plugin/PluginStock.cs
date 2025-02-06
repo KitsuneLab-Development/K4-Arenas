@@ -31,7 +31,7 @@ namespace K4Arenas
 			if (gameRules.WarmupPeriod == true || Arenas == null)
 				return;
 
-			List<CCSPlayerController> players = [.. Utilities.GetPlayers().Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && !x.IsHLTV && x.Connected == PlayerConnectedState.PlayerConnected)];
+			List<CCSPlayerController> players = [.. Utilities.GetPlayers().Where(x => x?.IsValid == true && x.PlayerPawn?.IsValid == true && x.Team > CsTeam.Spectator && !x.IsHLTV && x.Connected == PlayerConnectedState.PlayerConnected)];
 
 			if (!players.Any(p => !p.IsBot))
 				return;
@@ -182,7 +182,7 @@ namespace K4Arenas
 			Server.ExecuteCommand("mp_free_armor 0");
 		}
 
-		public static RoundType GetCommonRoundType(List<RoundType>? roundPreferences1, List<RoundType>? roundPreferences2, bool multi)
+		public RoundType GetCommonRoundType(List<RoundType>? roundPreferences1, List<RoundType>? roundPreferences2, bool multi)
 		{
 			List<RoundType> commonRounds = roundPreferences1?.Intersect(roundPreferences2 ?? roundPreferences1)?.ToList() ?? [];
 			List<RoundType> commonUsableRounds = multi ? commonRounds : [.. commonRounds.Where(rt => rt.TeamSize < 2)];
@@ -190,6 +190,15 @@ namespace K4Arenas
 			if (commonUsableRounds.Count != 0)
 			{
 				return commonUsableRounds[Random.Shared.Next(0, commonUsableRounds.Count)];
+			}
+
+			if (!string.IsNullOrEmpty(Config.DefaultWeaponSettings.DefaultRound))
+			{
+				RoundType? defaultRound = RoundType.RoundTypes.FirstOrDefault(rt => rt.Name == Config.DefaultWeaponSettings.DefaultRound);
+				if (defaultRound != null)
+				{
+					return (RoundType)defaultRound;
+				}
 			}
 
 			List<RoundType> availableRoundTypes = [.. RoundType.RoundTypes.Where(rt => rt.TeamSize < 2)];
