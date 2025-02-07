@@ -1,3 +1,7 @@
+-- 2025.02.07 - 2.0.2
+
+- fix: Error log due to a missing validation in NextFrame
+
 -- 2025.02.06 - 2.0.1
 
 - feat: Introduced configurable default round type for scenarios where players have no matching round preferences

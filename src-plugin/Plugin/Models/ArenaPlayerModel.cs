@@ -105,6 +105,9 @@ public class ArenaPlayer
 
 		Server.NextWorldUpdate(() =>
 		{
+			if (!this.IsValid)
+				return;
+
 			if (Controller.PlayerPawn.Value != null)
 			{
 				CCSPlayerPawn playerPawn = Controller.PlayerPawn.Value;
