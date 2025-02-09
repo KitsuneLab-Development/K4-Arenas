@@ -1,3 +1,7 @@
+-- 2025.02.08 - 2.0.3
+
+- fix: TerminateRound issues when an arena has only one player
+
 -- 2025.02.07 - 2.0.2
 
 - fix: Error log due to a missing validation in NextFrame

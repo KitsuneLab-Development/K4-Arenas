@@ -31,8 +31,11 @@ public class Arena
 		Localizer = Plugin.Localizer;
 	}
 
+	public bool IsActive
+		=> Team1 != null && Team2 != null && Team1.Count > 0 && Team2.Count > 0;
+
 	public bool HasFinished
-		=> Team1?.All(p => p.IsValid && !p.IsAlive) == true || Team2?.All(p => p.IsValid && !p.IsAlive) == true;
+		=> !IsActive || Team1?.All(p => p.IsValid && !p.IsAlive) == true || Team2?.All(p => p.IsValid && !p.IsAlive) == true;
 
 	public bool HasRealPlayers
 		=> Team1?.Any(p => p.IsValid && !p.Controller.IsBot) == true || Team2?.Any(p => p.IsValid && !p.Controller.IsBot) == true;
