@@ -1,3 +1,7 @@
+-- 2025.02.26 - 2.0.4
+
+- fix: Added missing preference saves to chat menus
+
 -- 2025.02.08 - 2.0.3
 
 - fix: TerminateRound issues when an arena has only one player

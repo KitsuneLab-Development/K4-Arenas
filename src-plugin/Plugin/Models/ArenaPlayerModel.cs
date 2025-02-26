@@ -158,13 +158,14 @@ public class ArenaPlayer
 				(player, option) =>
 				{
 					ToggleRoundPreference(roundType);
+					Task.Run(SavePlayerPreferencesAsync);
 				}
 			);
 		}
+
 		MenuManager.OpenChatMenu(Controller, roundPreferenceMenu);
 	}
 
-	private const float SpamDelay = 0.35f;
 	private void ShowCenterRoundPreferenceMenu()
 	{
 		var items = new List<MenuItem>();
@@ -340,6 +341,7 @@ public class ArenaPlayer
 			(player, option) =>
 			{
 				SetWeaponPreference(weaponType, null);
+				Task.Run(SavePlayerPreferencesAsync);
 			}
 		);
 
@@ -354,6 +356,7 @@ public class ArenaPlayer
 				(player, option) =>
 				{
 					SetWeaponPreference(weaponType, item);
+					Task.Run(SavePlayerPreferencesAsync);
 				}
 			);
 		}
