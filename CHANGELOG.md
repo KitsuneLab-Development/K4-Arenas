@@ -1,8 +1,56 @@
--- 2024.12.23 - 1.5.5
+-- 2025.05.16 - 2.0.5
 
 - feat: Added 3 new natives - IsAFK, FindOpponents & TerminateRoundIfPossible
 - update: When a player executes !afk, execute TerminateRoundIfPossible.
 - update: Added `allowed-weapon-prefs` to toggle showing weaponTypes in `!guns` menu.
+
+-- 2025.02.26 - 2.0.4
+
+- fix: Added missing preference saves to chat menus
+
+-- 2025.02.08 - 2.0.3
+
+- fix: TerminateRound issues when an arena has only one player
+
+-- 2025.02.07 - 2.0.2
+
+- fix: Error log due to a missing validation in NextFrame
+
+-- 2025.02.06 - 2.0.1
+
+- feat: Introduced configurable default round type for scenarios where players have no matching round preferences
+- fix: Resolved queue assignment issues when warmup_enabled convars was disabled
+
+-- 2025.02.04 - 2.0.0
+
+- feat: Added automated challenge systems for bots
+- feat: Enhanced challenge notifications in screen center
+- feat: Added warmup status indicators
+- feat: Implemented bot arena match handling
+- feat: Added support for CYBERSHOKE maps
+- upgrade: New smart arena detection system
+- upgrade: Rebuilt duel mechanics from ground up
+- optimise: Reduced round end processing overhead
+- optimise: Better warmup player handling
+- optimise: Smarter warmup population timing
+- optimise: Code cleanup for better performance
+- fix: Map transition round timing issues
+- fix: Player preferences persistence
+- fix: Challenge position assignments
+- fix: Challenge end state handling
+- fix: Spawn conflicts with zero warmup
+- fix: Random team switch problems
+- fix: Multiple arena allocation fixes
+
+-- 2025.01.28 - 1.5.5
+
+- feat: Added detection for team changes from Anti-AFK and third-party plugins to handle arena AFK state
+- feat: Implemented default "Preferred" SSLMode fallback for invalid database configurations
+- feat: Player-specific translations now respect individual language settings (changeable via !lang command)
+- feat: Introduced HTML-based round announcements in screen center during freeze time
+- upgrade: Refactored menu system for improved preference handling and display
+- optimise: Streamlined codebase with simplified logic patterns
+- remove: Discontinued support for MetaMod skinchanger compatibility
 
 -- 2024.12.20 - 1.5.4
 

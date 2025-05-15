@@ -16,8 +16,8 @@ namespace K4Arenas
 		public CommandSettings CommandSettings { get; set; } = new CommandSettings();
 
 		[JsonPropertyName("round-settings")]
-		public List<RoundTypeReader> RoundSettings { get; set; } = new List<RoundTypeReader>
-		{
+		public List<RoundTypeReader> RoundSettings { get; set; } =
+		[
 			new() {
 				TranslationName = "k4.rounds.rifle",
 				TeamSize = 1,
@@ -119,7 +119,7 @@ namespace K4Arenas
 				Armor = false,
 				Helmet = false
 			}
-		};
+		];
 
 		[JsonPropertyName("compatibility-settings")]
 		public CompatibilitySettings CompatibilitySettings { get; set; } = new CompatibilitySettings();
@@ -134,14 +134,11 @@ namespace K4Arenas
 		public int ArenaMathOverrides { get; set; } = 0;
 
 		[JsonPropertyName("ConfigVersion")]
-		public override int Version { get; set; } = 6;
+		public override int Version { get; set; } = 9;
 	}
 
 	public sealed class CompatibilitySettings
 	{
-		[JsonPropertyName("metamod-skinchanger-compatibility")]
-		public bool MetamodSkinchanger { get; set; } = false;
-
 		[JsonPropertyName("force-arena-clantags")]
 		public bool ForceArenaClantags { get; set; } = false;
 
@@ -158,58 +155,82 @@ namespace K4Arenas
 		public bool DisableClantags { get; set; } = false;
 	}
 
+	public sealed class AllowedWeaponPreferences
+	{
+		[JsonPropertyName("rifle")]
+		public bool Rifle { get; set; } = true;
+
+		[JsonPropertyName("sniper")]
+		public bool Sniper { get; set; } = true;
+
+		[JsonPropertyName("smg")]
+		public bool SMG { get; set; } = true;
+
+		[JsonPropertyName("lmg")]
+		public bool LMG { get; set; } = true;
+
+		[JsonPropertyName("shotgun")]
+		public bool Shotgun { get; set; } = true;
+
+		[JsonPropertyName("pistol")]
+		public bool Pistol { get; set; } = true;
+	}
+
 	public sealed class CommandSettings
 	{
 		[JsonPropertyName("gun-pref-commands")]
-		public List<string> GunsCommands { get; set; } = new List<string>
-		{
+		public List<string> GunsCommands { get; set; } =
+		[
 			"guns",
 			"gunpref",
 			"weaponpref",
-		};
+		];
 
 		[JsonPropertyName("round-pref-commands")]
-		public List<string> RoundsCommands { get; set; } = new List<string>
-		{
+		public List<string> RoundsCommands { get; set; } =
+		[
 			"rounds",
 			"roundpref",
-		};
+		];
 
 		[JsonPropertyName("queue-commands")]
-		public List<string> QueueCommands { get; set; } = new List<string>
-		{
+		public List<string> QueueCommands { get; set; } =
+		[
 			"queue"
-		};
+		];
 
 		[JsonPropertyName("afk-commands")]
-		public List<string> AFKCommands { get; set; } = new List<string>
-		{
+		public List<string> AFKCommands { get; set; } =
+		[
 			"afk"
-		};
+		];
 
 		[JsonPropertyName("challenge-commands")]
-		public List<string> ChallengeCommands { get; set; } = new List<string>
-		{
+		public List<string> ChallengeCommands { get; set; } =
+		[
 			"challenge",
 			"duel"
-		};
+		];
 
 		[JsonPropertyName("challenge-accept-commands")]
-		public List<string> ChallengeAcceptCommands { get; set; } = new List<string>
-		{
+		public List<string> ChallengeAcceptCommands { get; set; } =
+		[
 			"caccept",
 			"capprove"
-		};
+		];
 
 		[JsonPropertyName("challenge-decline-commands")]
-		public List<string> ChallengeDeclineCommands { get; set; } = new List<string>
-		{
+		public List<string> ChallengeDeclineCommands { get; set; } =
+		[
 			"cdecline",
 			"cdeny"
-		};
+		];
 
 		[JsonPropertyName("center-menu-mode")]
 		public bool CenterMenuMode { get; set; } = true;
+
+		[JsonPropertyName("center-announce-mode")]
+		public bool CenterAnnounceMode { get; set; } = true;
 
 		[JsonPropertyName("freeze-in-center-menu")]
 		public bool FreezeInMenu { get; set; } = true;
@@ -237,27 +258,9 @@ namespace K4Arenas
 
 		[JsonPropertyName("default-pistol")]
 		public string? DefaultPistol { get; set; } = null;
-	}
 
-	public sealed class AllowedWeaponPreferences
-	{
-		[JsonPropertyName("rifle")]
-		public bool Rifle { get; set; } = true;
-
-		[JsonPropertyName("sniper")]
-		public bool Sniper { get; set; } = true;
-
-		[JsonPropertyName("smg")]
-		public bool SMG { get; set; } = true;
-
-		[JsonPropertyName("lmg")]
-		public bool LMG { get; set; } = true;
-
-		[JsonPropertyName("shotgun")]
-		public bool Shotgun { get; set; } = true;
-
-		[JsonPropertyName("pistol")]
-		public bool Pistol { get; set; } = true;
+		[JsonPropertyName("default-round")]
+		public string? DefaultRound { get; set; } = "k4.rounds.rifle";
 	}
 
 	public sealed class DatabaseSettings

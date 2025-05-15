@@ -18,9 +18,6 @@
         public required PluginConfig Config { get; set; } = new PluginConfig();
         public GameConfig? GameConfig { get; set; }
         public Menu.KitsuneMenu Menu { get; private set; } = null!;
-        public static readonly Random rng = new();
-        public static MemoryFunctionVoid<IntPtr, string, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, IntPtr>? GiveNamedItem2;
-
         public bool IsBetweenRounds = false;
         public bool HasDatabase = false;
 
@@ -32,14 +29,6 @@
             {
                 base.Logger.LogWarning("Configuration version mismatch (Expected: {0} | Current: {1})", this.Config.Version, config.Version);
             }
-
-            //** ? Signature Check */
-
-            GiveNamedItem2 = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-                ? new(@"\x55\x48\x89\xE5\x41\x57\x41\x56\x41\x55\x41\x54\x53\x48\x83\xEC\x18\x48\x89\x7D\xC8\x48\x85\xF6\x74")
-                : RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                    ? new(@"\x48\x83\xEC\x38\x48\xC7\x44\x24\x28\x00\x00\x00\x00\x45\x33\xC9\x45\x33\xC0\xC6\x44\x24\x20\x00\xE8\x2A\x2A\x2A\x2A\x48\x85")
-                    : null;
 
             //** ? Load Round Types */
 
@@ -58,11 +47,12 @@
         }
 
         public Queue<ArenaPlayer> WaitingArenaPlayers { get; set; } = new Queue<ArenaPlayer>();
+        public List<ChallengeModel> Challenges { get; set; } = [];
         public Arenas? Arenas { get; set; } = null;
 
         public CCSGameRules? gameRules = null;
         public Timer? WarmupTimer { get; set; } = null;
-        public Timer? ForceClanTimer { get; set; } = null;
+        public bool FlashFixFound { get; set; } = false;
 
         public override void Load(bool hotReload)
         {
@@ -70,6 +60,7 @@
                 GameConfig = new GameConfig(this);
 
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ModulePath);
+            FlashFixFound = Directory.Exists(Path.Combine(ModulePath, "..", "FlashingXMLHintFix"));
 
             if (!IsDatabaseConfigDefault(Config))
             {
@@ -96,17 +87,17 @@
 
             if (hotReload)
             {
+                var players = Utilities.GetPlayers().Where(p => p.IsValid == true && p.PlayerPawn?.IsValid == true && !p.IsHLTV).ToList();
+                lastRealPlayers = players.Count(p => !p.IsBot);
+
                 Arenas ??= new Arenas(this);
 
                 gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules;
 
-                Utilities.GetPlayers()
-                    .Where(p => p.IsValid == true && p.PlayerPawn?.IsValid == true && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected)
-                    .ToList()
-                    .ForEach(p =>
-                    {
-                        SetupPlayer(p);
-                    });
+                players.ForEach(p =>
+                {
+                    SetupPlayer(p);
+                });
 
                 GameConfig?.Apply();
 
@@ -117,7 +108,7 @@
 
             if (Config.CompatibilitySettings.ForceArenaClantags)
             {
-                ForceClanTimer = AddTimer(1, () =>
+                AddTimer(1, () =>
                 {
                     if (Arenas is null) return;
 
@@ -143,17 +134,6 @@
                     }
                 }, TimerFlags.REPEAT);
             }
-        }
-
-        public override void Unload(bool hotReload)
-        {
-            List<ArenaPlayer> players = Utilities.GetPlayers()
-                 .Where(p => p.IsValid && p.PlayerPawn?.IsValid == true && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected)
-                 .Select(p => Arenas?.FindPlayer(p)!)
-                 .Where(p => p != null)
-                 .ToList();
-
-            Task.Run(() => SavePlayerPreferencesAsync(players));
         }
     }
 }

@@ -41,6 +41,17 @@ To use this server addon, you'll need the following dependencies installed:
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- COMMUNITY -->
+
+## Community Addons
+
+The community has also created some addons which allows you to extend the functionality of K4-Arenas.
+Show you love to these fellow developers with a star on their repository! <3
+
+- [**K4-Arenas-Special-Rounds**](https://github.com/Letaryat/K4-Arenas-Special-Rounds): Only Headshot: AK47, Only Headshot: USP-S, Only Headshot: Scout, Only nade
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- ROADMAP -->
 
 ## Roadmap
