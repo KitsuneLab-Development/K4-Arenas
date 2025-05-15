@@ -191,8 +191,12 @@ public class Arena
 						if (player.Controller.IsValid)
 							if (Plugin.Config.CommandSettings.CenterAnnounceMode)
 							{
-								player.CenterMessage = Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart_html", Plugin.GetRequiredArenaName(ArenaID), ArenaID == -1 ? Localizer.ForPlayer(player.Controller, "k4.general.random") : Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing"), Plugin.GetOpponentNames(player.Controller, opponents) ?? "Unknown");
-								player.Controller.PrintToChat($" {Localizer.ForPlayer(player.Controller, "k4.general.prefix")} {Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(player.Controller, opponents) ?? "Unknown", ArenaID == -1 ? Localizer.ForPlayer(player.Controller, "k4.general.random") : Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing"), Plugin.GetOpponentNames(player.Controller, opponents))}");
+								var arenaName = Plugin.GetRequiredArenaName(ArenaID);
+								var opponentNames = Plugin.GetOpponentNames(player.Controller, opponents) ?? "Unknown";
+								var roundName = ArenaID == -1 ? Localizer.ForPlayer(player.Controller, "k4.general.random") : Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing");
+
+								player.CenterMessage = Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart_html", arenaName, roundName, opponentNames);
+								player.Controller.PrintToChat($" {Localizer.ForPlayer(player.Controller, "k4.general.prefix")} {Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart", arenaName, opponentNames, roundName, opponentNames)}");
 							}
 					});
 				}
