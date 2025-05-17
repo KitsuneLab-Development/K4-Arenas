@@ -55,6 +55,31 @@ namespace K4Arenas
 			return string.Empty;
 		}
 
+		public bool IsAFK(CCSPlayerController player)
+		{
+			var arenaPlayer = plugin.Arenas?.FindPlayer(player);
+			if (arenaPlayer is not null)
+			{
+				return arenaPlayer.AFK;
+			}
+			return false;
+		}
+
+		public List<CCSPlayerController> FindOpponents(CCSPlayerController player)
+		{
+			var arenaOpponents = plugin.Arenas?.FindOpponents(player);
+			if (arenaOpponents is not null)
+			{
+				return arenaOpponents;
+			}
+			return new List<CCSPlayerController>();
+		}
+
+		public void TerminateRoundIfPossible()
+		{
+			plugin.TerminateRoundIfPossible();
+		}
+
 		public void PerformAFKAction(CCSPlayerController player, bool afk)
 		{
 			ArenaPlayer? arenaPlayer = plugin.Arenas?.FindPlayer(player!);

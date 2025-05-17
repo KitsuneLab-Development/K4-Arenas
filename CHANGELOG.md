@@ -1,3 +1,9 @@
+-- 2025.05.16 - 2.0.5
+
+- feat: Added 3 new natives - IsAFK, FindOpponents & TerminateRoundIfPossible
+- update: When a player executes !afk, execute TerminateRoundIfPossible.
+- update: Added `allowed-weapon-prefs` to toggle showing weaponTypes in `!guns` menu.
+
 -- 2025.02.26 - 2.0.4
 
 - fix: Added missing preference saves to chat menus

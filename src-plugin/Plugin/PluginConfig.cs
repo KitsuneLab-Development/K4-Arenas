@@ -127,8 +127,14 @@ namespace K4Arenas
 		[JsonPropertyName("default-weapon-settings")]
 		public DefaultWeaponSettings DefaultWeaponSettings { get; set; } = new DefaultWeaponSettings();
 
+		[JsonPropertyName("allowed-weapon-prefs")]
+		public AllowedWeaponPreferences AllowedWeaponPreferences { get; set; } = new AllowedWeaponPreferences();
+
+		[JsonPropertyName("arena-math-overrides")]
+		public int ArenaMathOverrides { get; set; } = 0;
+
 		[JsonPropertyName("ConfigVersion")]
-		public override int Version { get; set; } = 8;
+		public override int Version { get; set; } = 9;
 	}
 
 	public sealed class CompatibilitySettings
@@ -147,6 +153,27 @@ namespace K4Arenas
 
 		[JsonPropertyName("disable-clantags")]
 		public bool DisableClantags { get; set; } = false;
+	}
+
+	public sealed class AllowedWeaponPreferences
+	{
+		[JsonPropertyName("rifle")]
+		public bool Rifle { get; set; } = true;
+
+		[JsonPropertyName("sniper")]
+		public bool Sniper { get; set; } = true;
+
+		[JsonPropertyName("smg")]
+		public bool SMG { get; set; } = true;
+
+		[JsonPropertyName("lmg")]
+		public bool LMG { get; set; } = true;
+
+		[JsonPropertyName("shotgun")]
+		public bool Shotgun { get; set; } = true;
+
+		[JsonPropertyName("pistol")]
+		public bool Pistol { get; set; } = true;
 	}
 
 	public sealed class CommandSettings

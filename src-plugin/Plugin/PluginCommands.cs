@@ -218,6 +218,8 @@ namespace K4Arenas
 					player.Clan = arenaPlayer.ArenaTag;
 					Utilities.SetStateChanged(player, "CCSPlayerController", "m_szClan");
 				}
+
+				TerminateRoundIfPossible();
 			}
 			else
 			{

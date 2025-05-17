@@ -32,7 +32,7 @@ public class Arena
 	}
 
 	public bool IsActive
-		=> Team1 != null && Team2 != null && Team1.Count > 0 && Team2.Count > 0;
+		=> Team1?.Any(p => p.IsValid && Plugin.Arenas?.FindPlayer(p.Controller)?.AFK == false) == true && Team2?.Any(p => p.IsValid && Plugin.Arenas?.FindPlayer(p.Controller)?.AFK == false) == true;
 
 	public bool HasFinished
 		=> !IsActive || Team1?.All(p => p.IsValid && !p.IsAlive) == true || Team2?.All(p => p.IsValid && !p.IsAlive) == true;
@@ -185,10 +185,20 @@ public class Arena
 
 				if (!player.Controller.IsBot)
 				{
-					if (Plugin.Config.CommandSettings.CenterAnnounceMode)
-						player.CenterMessage = Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart_html", Plugin.GetRequiredArenaName(ArenaID), ArenaID == -1 ? Localizer.ForPlayer(player.Controller, "k4.general.random") : Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing"), Plugin.GetOpponentNames(player.Controller, opponents) ?? "Unknown");
-					else if (ArenaID != -1)
-						player.Controller.PrintToChat($" {Localizer.ForPlayer(player.Controller, "k4.general.prefix")} {Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart", Plugin.GetRequiredArenaName(ArenaID), Plugin.GetOpponentNames(player.Controller, opponents) ?? "Unknown", Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing"))}");
+					// Bots plugin sets bot_prefix at EventRoundPreStart hence some delay to print opponent names. (Frame not enough sometimes)
+					Plugin.AddTimer(0.001f, () =>
+					{
+						if (player.Controller.IsValid)
+							if (Plugin.Config.CommandSettings.CenterAnnounceMode)
+							{
+								var arenaName = Plugin.GetRequiredArenaName(ArenaID);
+								var opponentNames = Plugin.GetOpponentNames(player.Controller, opponents) ?? "Unknown";
+								var roundName = ArenaID == -1 ? Localizer.ForPlayer(player.Controller, "k4.general.random") : Localizer.ForPlayer(player.Controller, RoundType.Name ?? "Missing");
+
+								player.CenterMessage = Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart_html", arenaName, roundName, opponentNames);
+								player.Controller.PrintToChat($" {Localizer.ForPlayer(player.Controller, "k4.general.prefix")} {Localizer.ForPlayer(player.Controller, "k4.chat.arena_roundstart", arenaName, opponentNames, roundName, opponentNames)}");
+							}
+					});
 				}
 
 				if (Plugin.gameRules?.WarmupPeriod == true)

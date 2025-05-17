@@ -37,6 +37,26 @@ public class Arenas
 		return allPlayers.FirstOrDefault(p => p.Controller == player);
 	}
 
+	public List<CCSPlayerController> FindOpponents(CCSPlayerController? player)
+	{
+		var arenaPlayer = FindPlayer(player);
+
+		if (arenaPlayer is null)
+			return new List<CCSPlayerController>();
+
+		var arenaID = Plugin.GetPlayerArenaID(arenaPlayer);
+
+		if(arenaID < 0)
+			return new List<CCSPlayerController>();
+
+		var arena = ArenaList.FirstOrDefault(a => a.ArenaID == arenaID);
+		if (arena == null)
+			return new List<CCSPlayerController>();
+
+		var opponents = arena.Team1?.Any(p => p.Controller == player) == true ? arena.Team2 : arena.Team1;
+		return opponents?.Select(p => p.Controller).ToList() ?? new List<CCSPlayerController>();
+	}
+
 	public ArenaPlayer? FindPlayer(ulong steamId)
 	{
 		IEnumerable<ArenaPlayer> allPlayers = Plugin.WaitingArenaPlayers

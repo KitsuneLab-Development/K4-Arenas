@@ -122,6 +122,7 @@ namespace K4Arenas
 
 				WaitingArenaPlayers = new Queue<ArenaPlayer>(WaitingArenaPlayers.Where(p => p.Controller != playerController));
 				Arenas?.ArenaList.ForEach(arena => arena.RemovePlayer(playerController));
+				TerminateRoundIfPossible();
 				return HookResult.Continue;
 			});
 
@@ -364,7 +365,7 @@ namespace K4Arenas
 				}
 
 				return HookResult.Continue;
-			});
+			}, HookMode.Pre);
 
 			RegisterEventHandler((EventRoundStart @event, GameEventInfo info) =>
 			{
