@@ -16,8 +16,6 @@
       <ExcludeAssets>runtime</ExcludeAssets>
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Dapper" Version="*" />
-    <PackageReference Include="MySqlConnector" Version="*" />
     <Reference Include="K4ArenaSharedApi">
       <HintPath>../src-shared/K4-ArenaSharedApi.dll</HintPath>
       <Private>false</Private>
