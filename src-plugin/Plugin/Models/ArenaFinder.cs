@@ -55,11 +55,18 @@ public class ArenaFinder
 
 		Plugin.Logger.LogInformation("Successfully setup {0} arena(s) on map {1}!", spawns.Count, Server.MapName);
 
-		var maxPairSize = spawns
-			.Select(pair => Math.Min(pair.Item1.Count, pair.Item2.Count))
-			.Max();
+		if (spawns.Count > 0)
+		{
+			var maxPairSize = spawns
+				.Select(pair => Math.Min(pair.Item1.Count, pair.Item2.Count))
+				.Max();
 
-		Plugin.Logger.LogInformation("Supported arena modes: {0}", maxPairSize > 1 ? $"1v1-{maxPairSize}v{maxPairSize}" : "1v1");
+			Plugin.Logger.LogInformation("Supported arena modes: {0}", maxPairSize > 1 ? $"1v1-{maxPairSize}v{maxPairSize}" : "1v1");
+		}
+		else
+		{
+			Plugin.Logger.LogWarning("No arenas were created. Players will not be able to spawn.");
+		}
 		return spawns;
 	}
 
@@ -234,6 +241,14 @@ public class ArenaFinder
 			{
 				Plugin.Logger.LogDebug($"Cluster discarded (only {(clusterCT.Count > 0 ? "CT" : "T")} spawns present).");
 			}
+		}
+
+		// Fallback: if no valid arenas were found, create a single arena with all spawns
+		if (arenaPairs.Count == 0 && ctList.Count > 0 && tList.Count > 0)
+		{
+			Plugin.Logger.LogWarning("No suitable arenas found with standard clustering. Using fallback mode with all spawns.");
+			arenaPairs.Add(Tuple.Create(ctList, tList));
+			Plugin.Logger.LogDebug($"Fallback Arena: CT Spawns: {ctList.Count}, T Spawns: {tList.Count}.");
 		}
 
 		return arenaPairs;

@@ -1,3 +1,7 @@
+-- 2025.05.21 - 2.0.6
+
+- fix: Sometimes on mapchange arenas not found (thanks for the feedback nyshun.)
+
 -- 2025.05.16 - 2.0.5
 
 - feat: Added 3 new natives - IsAFK, FindOpponents & TerminateRoundIfPossible
