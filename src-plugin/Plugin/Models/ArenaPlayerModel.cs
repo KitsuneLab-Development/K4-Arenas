@@ -333,6 +333,7 @@ public class ArenaPlayer
 			CsItem item = possibleItems[i];
 			if (WeaponModel.GetWeaponType(item) != weaponType)
 				continue;
+
 			items.Add(new MenuItem(MenuItemType.Bool, new MenuValue($"{Localizer.ForPlayer(Controller, item.ToString())}: ")));
 			defaultValues[i + 1] = WeaponPreferences[weaponType] == item;
 		}

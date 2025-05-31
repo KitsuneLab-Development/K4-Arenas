@@ -1,3 +1,8 @@
+-- 2025.05.31 - 2.0.7
+
+- feat: Added an option to prevent draws on equal alive counts
+- fix: Database was required to start to plugin.
+
 -- 2025.05.21 - 2.0.6
 
 - fix: Sometimes on mapchange arenas not found (thanks for the feedback nyshun.)

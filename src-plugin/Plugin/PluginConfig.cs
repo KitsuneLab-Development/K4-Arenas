@@ -130,11 +130,8 @@ namespace K4Arenas
 		[JsonPropertyName("allowed-weapon-prefs")]
 		public AllowedWeaponPreferences AllowedWeaponPreferences { get; set; } = new AllowedWeaponPreferences();
 
-		[JsonPropertyName("arena-math-overrides")]
-		public int ArenaMathOverrides { get; set; } = 0;
-
 		[JsonPropertyName("ConfigVersion")]
-		public override int Version { get; set; } = 9;
+		public override int Version { get; set; } = 10;
 	}
 
 	public sealed class CompatibilitySettings
@@ -153,6 +150,9 @@ namespace K4Arenas
 
 		[JsonPropertyName("disable-clantags")]
 		public bool DisableClantags { get; set; } = false;
+
+		[JsonPropertyName("prevent-draw-rounds")]
+		public bool PreventDrawRounds { get; set; } = true;
 	}
 
 	public sealed class AllowedWeaponPreferences

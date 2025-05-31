@@ -162,10 +162,6 @@ public sealed partial class Plugin : BasePlugin
 		return _settings.Host == "localhost" &&
 			_settings.Username == "root" &&
 			_settings.Database == "database" &&
-			_settings.Password == "password" &&
-			_settings.Port == 3306 &&
-			_settings.Sslmode == "none" &&
-			_settings.TablePrefix == "" &&
-			_settings.TablePurgeDays == 30;
+			_settings.Password == "password";
 	}
 }
