@@ -2,6 +2,7 @@
 using System.Data;
 using CounterStrikeSharp.API.Core;
 using K4Arenas.Models;
+using K4ArenaSharedApi;
 using MySqlConnector;
 using Dapper;
 using CounterStrikeSharp.API.Modules.Entities.Constants;

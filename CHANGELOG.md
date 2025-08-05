@@ -1,3 +1,8 @@
+-- 2025.08.05 - 2.0.8
+
+- feat: Added API function to get weapon preferences for a player for a given weapon type (#50)
+- chore: Changed arena csproj to include API as project instead of dll
+
 -- 2025.05.31 - 2.0.7
 
 - feat: Added an option to prevent draws on equal alive counts

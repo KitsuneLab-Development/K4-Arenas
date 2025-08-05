@@ -2,6 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Utils;
+using K4ArenaSharedApi;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 

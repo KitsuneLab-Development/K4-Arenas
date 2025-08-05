@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 using Dapper;
+using K4ArenaSharedApi;
 using Menu;
 using Menu.Enums;
 using Microsoft.Extensions.Localization;

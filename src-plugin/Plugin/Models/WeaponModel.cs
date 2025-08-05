@@ -1,17 +1,7 @@
 using CounterStrikeSharp.API.Modules.Entities.Constants;
+using K4ArenaSharedApi;
 
 namespace K4Arenas.Models;
-
-public enum WeaponType
-{
-	Rifle,
-	Sniper,
-	SMG,
-	LMG,
-	Shotgun,
-	Pistol,
-	Unknown
-}
 
 public struct WeaponModel
 {

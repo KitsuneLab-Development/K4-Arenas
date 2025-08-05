@@ -2,6 +2,7 @@ namespace K4Arenas
 {
 	using CounterStrikeSharp.API.Core;
 	using K4Arenas.Models;
+	using K4ArenaSharedApi;
 	using System.Text.Json.Serialization;
 
 	public sealed class PluginConfig : BasePluginConfig

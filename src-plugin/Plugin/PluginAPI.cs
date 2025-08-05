@@ -4,6 +4,7 @@ namespace K4Arenas
 	using CounterStrikeSharp.API.Core;
 	using CounterStrikeSharp.API.Core.Capabilities;
 	using CounterStrikeSharp.API.Modules.Utils;
+	using CounterStrikeSharp.API.Modules.Entities.Constants;
 	using K4Arenas.Models;
 	using K4ArenaSharedApi;
 
@@ -111,6 +112,15 @@ namespace K4Arenas
 					Utilities.SetStateChanged(arenaPlayer.Controller, "CCSPlayerController", "m_szClan");
 				}
 			}
+		}
+
+		public CsItem? GetPlayerWeaponPreference(CCSPlayerController player, WeaponType weaponType)
+		{
+			ArenaPlayer? arenaPlayer = plugin.Arenas?.FindPlayer(player);
+			if (arenaPlayer is null || !arenaPlayer.Loaded)
+				return null;
+
+			return arenaPlayer.WeaponPreferences.TryGetValue(weaponType, out CsItem? preference) ? preference : null;
 		}
 	}
 }

@@ -2,6 +2,7 @@ using System.Runtime.Serialization;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using K4Arenas.Models;
+using K4ArenaSharedApi;
 
 namespace K4Arenas.Models
 {
